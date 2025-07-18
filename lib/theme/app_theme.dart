@@ -20,6 +20,11 @@ class AppTheme {
     stops: [0.0, 0.5, 1.0], // Optional: controls transition smoothness
   );
   // Colors
+  static final BoxShadow primaryShadow = BoxShadow(
+    color: Colors.grey.shade400,
+    blurRadius: 4,
+    offset: Offset(0, 0),
+  );
 
   static const Color primaryColor = Color(0xffa4123f);
   static const Color whiteColor = Colors.white;

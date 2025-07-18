@@ -1,10 +1,12 @@
-import 'package:asset_audit/Pages/BarCodePage/binding/barcode_binding.dart';
+import 'package:asset_audit/Authentication/view/login_page.dart';
+import 'package:asset_audit/Authentication/view/registration_page.dart';
 import 'package:get/get.dart';
+import 'package:asset_audit/Pages/SplashPage/binding/splash_binding.dart';
+import 'package:asset_audit/Pages/SplashPage/view/splash_page.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/Pages/HomePage/view/home_page.dart';
 import 'package:asset_audit/Pages/AuditingPage/view/auditing_page.dart';
-import 'package:asset_audit/Pages/BarCodePage/view/asset_view_page.dart';
-import 'package:asset_audit/Pages/BarCodePage/view/barcode_page.dart';
+import 'package:asset_audit/Pages/AuditingPage/view/asset_view_page.dart';
 import 'package:asset_audit/Pages/HomePage/binding/home_binding.dart';
 import 'package:asset_audit/Pages/AuditingPage/binding/auditing_binding.dart';
 
@@ -23,12 +25,24 @@ class AppPages {
     GetPage(
       name: AppRoutes.assetViewPage,
       page: () => AssetViewPage(),
-      binding: BarcodeBinding(),
+      binding: AuditingBinding(),
     ),
+   
     GetPage(
-      name: AppRoutes.barcodePage,
-      page: () => BarcodePage(), 
-      binding: BarcodeBinding()
+      name: AppRoutes.splashPage,
+      page: () => SplashPage(),
+      binding: SplashBinding(),
     ),
+   
+    GetPage(
+      name: AppRoutes.registrationPage,
+      page: () => RegistrationPage(),
+    ),
+   
+    GetPage(
+      name: AppRoutes.loginPage,
+      page: () => LoginPage(),
+    ),
+   
   ];
 }

@@ -42,6 +42,8 @@ dependencies:
   dropdown_button2: ^2.3.9
   simple_barcode_scanner: ^0.3.0
   mobile_scanner: ^3.5.4
+  flutter_native_splash: ^2.3.2
+  flutter_svg: ^2.2.0
 
 
 
@@ -97,3 +99,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/white.png
+
+  color_dark: "#000000"
+  image_dark: assets/images/black.png
+
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+
+  android_12:
+    color: "#ffffff"
+    image: assets/images/white.png
+    color_dark: "#000000"
+    image_dark: assets/images/black.png
+
+  web: true
+  fullscreen: true

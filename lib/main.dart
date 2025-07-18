@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 main() {
+  
   runApp(MyApp());
 }
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           getPages: AppPages.pages,
-          initialRoute: AppRoutes.homePage,
+          initialRoute: AppRoutes.registrationPage,
           theme: ThemeData(
             fontFamily: 'Poppins',
             colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryColor),

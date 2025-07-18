@@ -142,10 +142,12 @@ class HomePage extends GetView<HomeController> {
                                                 () => {
                                                   Get.offNamed(
                                                     arguments: {
+                                                      'auditNumber': audits.auditNumber,
                                                       'buildingId':
                                                           audits.building,
                                                       'buildingName':
                                                           audits.building_name,
+                                                          'dueDate' : audits.dueDate,
                                                     },
                                                     AppRoutes.auditingPage,
                                                   ),
