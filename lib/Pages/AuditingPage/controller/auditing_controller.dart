@@ -276,7 +276,7 @@ class AuditingController extends GetxController {
     scannedAssets.value = [scanned];
 
     Get.snackbar('Success', 'Added Successfully');
-    selectedUser.value = '';
+    // selectedUser.value = '';
 
     print(jsonEncode(scannedAssets.value.first));
     var existing = await appStorage.read("scannedAssets");

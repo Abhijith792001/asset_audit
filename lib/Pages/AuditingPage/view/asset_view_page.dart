@@ -213,9 +213,9 @@ class AssetViewPage extends StatelessWidget {
                       ),
                       SizedBox(height: 5.h),
                       Text(
-                        assetList.ownerName == null
+                       controller.selectedUser.value == ""
                             ? 'Owner Not found'
-                            : assetList.ownerName.toString(),
+                            : controller.selectedUser.value.toString(),
                         style: TextStyle(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
@@ -323,83 +323,83 @@ class AssetViewPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 10.h),
-                      controller.selectedRoomId == assetList.customRoom
-                          ? Container()
-                          : InkWell(
-                            onTap: () {
-                              // Handle save logic here
-                              // Example: controller.updateAssetOwner();
+                      // controller.selectedRoomId == assetList.customRoom
+                      //     ? Container()
+                      //     : InkWell(
+                      //       onTap: () {
+                      //         // Handle save logic here
+                      //         // Example: controller.updateAssetOwner();
             
-                              Get.dialog(
-                                AlertDialog(
-                                  backgroundColor: AppTheme.whiteColor,
-                                  title: Text('Are Your sure'),
-                                  content: Text(
-                                    'Are your sure to update location',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                      child: Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Get.back();
-                                        Get.snackbar(
-                                          'Success',
-                                          'Asset owner updated successfully',
-                                          // snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: const Color.fromARGB(
-                                            255,
-                                            9,
-                                            143,
-                                            58,
-                                          ),
-                                          colorText: Colors.white,
-                                        );
-                                      },
-                                      child: Text('Update Location'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(32.sp),
-                            child: Row(
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 5.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(32.sp),
-                                    color: AppTheme.secondaryColor,
-                                    border: Border.all(
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Update Location',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      //         Get.dialog(
+                      //           AlertDialog(
+                      //             backgroundColor: AppTheme.whiteColor,
+                      //             title: Text('Are Your sure'),
+                      //             content: Text(
+                      //               'Are your sure to update location',
+                      //             ),
+                      //             actions: [
+                      //               TextButton(
+                      //                 onPressed: () {
+                      //                   Get.back();
+                      //                 },
+                      //                 child: Text('Cancel'),
+                      //               ),
+                      //               ElevatedButton(
+                      //                 onPressed: () {
+                      //                   Get.back();
+                      //                   Get.snackbar(
+                      //                     'Success',
+                      //                     'Asset owner updated successfully',
+                      //                     // snackPosition: SnackPosition.BOTTOM,
+                      //                     backgroundColor: const Color.fromARGB(
+                      //                       255,
+                      //                       9,
+                      //                       143,
+                      //                       58,
+                      //                     ),
+                      //                     colorText: Colors.white,
+                      //                   );
+                      //                 },
+                      //                 child: Text('Update Location'),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         );
+                      //       },
+                      //       borderRadius: BorderRadius.circular(32.sp),
+                      //       child: Row(
+                      //         children: [
+                      //           Container(
+                      //             alignment: Alignment.center,
+                      //             padding: EdgeInsets.symmetric(
+                      //               horizontal: 12,
+                      //               vertical: 5.h,
+                      //             ),
+                      //             decoration: BoxDecoration(
+                      //               borderRadius: BorderRadius.circular(32.sp),
+                      //               color: AppTheme.secondaryColor,
+                      //               border: Border.all(
+                      //                 color: AppTheme.primaryColor,
+                      //               ),
+                      //             ),
+                      //             child: Text(
+                      //               'Update Location',
+                      //               style: TextStyle(
+                      //                 fontSize: 12.sp,
+                      //                 fontWeight: FontWeight.w600,
+                      //                 color: AppTheme.primaryColor,
+                      //               ),
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
                       SizedBox(height: 30.h),
             
                       // Confirm Button
                       InkWell(
                         onTap: () {
-                          if(assetList.ownerName != null){
+                          if(controller.selectedUser.value!=""){
                             controller.setCurrentAssetStatus();
                           controller.addScannedAssets();
                           controller.updateAssetStatus(
@@ -409,7 +409,7 @@ class AssetViewPage extends StatelessWidget {
                             floor: controller.selectedFloorId.value,
                             auditType: 'Issued Audit',
                             assetStatus: controller.currentAssetStatus.value,
-                            assetOwner: assetList.ownerUser.toString(),
+                            assetOwner: controller.selectedUser.value,
                             storeName: assetList.store  == null ? '': assetList.store.toString(),
                             activityBy: controller.currentUserMail.value,
                             room: controller.selectedRoomId.value,
