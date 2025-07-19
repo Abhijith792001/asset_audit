@@ -421,7 +421,7 @@ class AuditingController extends GetxController {
               Get.back();
               final deletedData = await appStorage.read('scannedAssets');
               print("scannedAssets after delete: $deletedData");
-              Get.back();
+              // Get.back();
             },
             child: Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
           ),
@@ -446,4 +446,9 @@ class AuditingController extends GetxController {
     currentUserMail.value = value ?? '';
     print(currentUserMail.value);
   }
+
+
+
+
+
 }

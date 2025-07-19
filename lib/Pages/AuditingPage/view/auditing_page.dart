@@ -17,6 +17,8 @@ class AuditingPage extends GetView<AuditingController> {
   final dueDate = Get.arguments['dueDate'];
   final appStorage = StorageManager();
 
+  final _assetNumber = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -144,15 +146,76 @@ class AuditingPage extends GetView<AuditingController> {
               ),
 
               SizedBox(height: 10.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: () => {controller.clearAudit()},
-                    child: BadgeBtn(title: 'Clear History'),
-                  ),
-                  SizedBox(width: 16.w),
-                ],
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap:
+                          () => {
+                            Get.dialog(
+                              AlertDialog(
+                                backgroundColor: AppTheme.whiteColor,
+
+                                actions: [
+                                  Column(
+                                    children: [
+                                      SizedBox(height: 10.h),
+                                      Text(
+                                        'Enter Asset Number',
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextField(
+                                        controller: _assetNumber,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () async{
+                                                  await controller.getAsset(_assetNumber.text.trim());
+                                                  Get.toNamed(AppRoutes.assetViewPage);
+                                            },
+                                            child: Text(
+                                              'Search Asset',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          },
+                      child: BadgeBtn(title: 'Search Manual'),
+                    ),
+                    InkWell(
+                      onTap: () => {controller.clearAudit()},
+                      child: BadgeBtn(title: 'Clear History'),
+                    ),
+                  ],
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
