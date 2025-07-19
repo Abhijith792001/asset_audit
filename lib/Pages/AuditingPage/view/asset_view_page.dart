@@ -76,376 +76,382 @@ class AssetViewPage extends StatelessWidget {
             }
           },
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Text(
-                  'Audit Details',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Text(
+                    'Audit Details',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.primaryColor,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10.h),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
-                width: Get.width,
-                decoration: BoxDecoration(
-                  color: AppTheme.whiteColor,
-                  borderRadius: BorderRadius.circular(16.sp),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.shade600,
-                      blurRadius: 4,
-                      offset: Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 12.w,
-                        right: 12.w,
-                        top: 12.h,
+                SizedBox(height: 10.h),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16.w),
+                  width: Get.width,
+                  decoration: BoxDecoration(
+                    color: AppTheme.whiteColor,
+                    borderRadius: BorderRadius.circular(16.sp),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade600,
+                        blurRadius: 4,
+                        offset: Offset(0, 0),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8.sp),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.secondaryColor,
-                                  borderRadius: BorderRadius.circular(8.sp),
-                                ),
-                                child: Icon(
-                                  LucideIcons.box,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    assetList.assetNo.toString(),
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 12.w,
+                          right: 12.w,
+                          top: 12.h,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8.sp),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.secondaryColor,
+                                    borderRadius: BorderRadius.circular(8.sp),
                                   ),
-                                  Text(
-                                    assetList.productCategory.toString(),
-                                    style: TextStyle(
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.grayColor,
-                                    ),
+                                  child: Icon(
+                                    LucideIcons.box,
+                                    color: AppTheme.primaryColor,
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Text(
-                            '12/05/2025',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: AppTheme.grayColor,
+                                ),
+                                SizedBox(width: 10.w),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      assetList.assetNo.toString(),
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      assetList.productCategory.toString(),
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppTheme.grayColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(thickness: 0.7, color: Colors.grey[300]),
-                    SizedBox(height: 10.h),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 12.w,
-                        right: 12.w,
-                        bottom: 12.h,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Current Status : ${assetList.assetStatus}',
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.sp),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 15.h),
-                    Text(
-                      'Room Audited: ${controller.selectedRoom}',
-                      style: TextStyle(
-                        fontSize: 16.67,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grayColor,
-                      ),
-                    ),
-                    SizedBox(height: 15.h),
-                    Text(
-                      'Current Owner',
-                      style: TextStyle(
-                        fontSize: 16.67.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      assetList.ownerName == null
-                          ? 'Owner Not found'
-                          : assetList.ownerName.toString(),
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color:
-                            assetList.ownerName == null
-                                ? AppTheme.dangerColor
-                                : AppTheme.grayColor,
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            // controller.updateAssets();
-                            showModel(context);
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 5.h,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(32.sp),
-                              color: AppTheme.secondaryColor,
-                              border: Border.all(color: AppTheme.primaryColor),
-                            ),
-                            child: Text(
-                              'Update Owner',
+                            Text(
+                              '12/05/2025',
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.primaryColor,
+                                color: AppTheme.grayColor,
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Product Model',
-                      style: TextStyle(
-                        fontSize: 16.67.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      assetList.productModel.toString(),
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grayColor,
-                      ),
-                    ),
-
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Modified By',
-                      style: TextStyle(
-                        fontSize: 16.67.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-                    Text(
-                      assetList.modifiedBy.toString(),
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grayColor,
-                      ),
-                    ),
-                    SizedBox(height: 15.h),
-                    Text(
-                      'Audit Status',
-                      style: TextStyle(
-                        fontSize: 16.87.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 5.h),
-
-                    // check(
-                    //   controller.selectedRoomId == assetList.customRoom
-                    //       ? "Room Mathched"
-                    //       : "Not Matched",
-                    //   controller.selectedRoomId == assetList.customRoom
-                    //       ? LucideIcons.circleCheck
-                    //       : LucideIcons.circle,
-                    // ),
-                    Text(
-                      controller.selectedRoomId == assetList.customRoom
-                          ? 'Location Verified: Asset is placed in the correct location.'
-                          : 'Location Mismatch: Asset found in a different location than expected.',
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color:
-                            controller.selectedRoomId == assetList.customRoom
-                                ? AppTheme.blackColor
-                                : AppTheme.dangerColor,
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    controller.selectedRoomId == assetList.customRoom
-                        ? Container()
-                        : InkWell(
-                          onTap: () {
-                            // Handle save logic here
-                            // Example: controller.updateAssetOwner();
-
-                            Get.dialog(
-                              AlertDialog(
-                                backgroundColor: AppTheme.whiteColor,
-                                title: Text('Are Your sure'),
-                                content: Text(
-                                  'Are your sure to update location',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    child: Text('Cancel'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Get.back();
-                                      Get.snackbar(
-                                        'Success',
-                                        'Asset owner updated successfully',
-                                        // snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor: const Color.fromARGB(
-                                          255,
-                                          9,
-                                          143,
-                                          58,
-                                        ),
-                                        colorText: Colors.white,
-                                      );
-                                    },
-                                    child: Text('Update Location'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(32.sp),
-                          child: Row(
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 5.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(32.sp),
-                                  color: AppTheme.secondaryColor,
-                                  border: Border.all(
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                ),
-                                child: Text(
-                                  'Update Location',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    SizedBox(height: 30.h),
-
-                    // Confirm Button
-                    InkWell(
-                      onTap: () {
-                        controller.setCurrentAssetStatus();
-                        controller.addScannedAssets();
-                        controller.updateAssetStatus(
-                          auditNumber: controller.auditNumber,
-                          assetNumber: assetList.assetNo.toString(),
-                          building: controller.buildingId,
-                          floor: controller.selectedFloorId.value,
-                          auditType: 'Issued Audit',
-                          assetStatus: controller.currentAssetStatus.value,
-                          assetOwner: assetList.owner.toString(),
-                          storeName: assetList.store  == null ? '': assetList.store.toString(),
-                          activityBy: 'auditagent1@am.amrita.edu',
-                          room: controller.selectedRoomId.value,
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(32),
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(
-                          vertical: 8.h,
-                          horizontal: 30.w,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(32),
-                          gradient: AppTheme.primaryGradient,
-                          border: Border.all(color: AppTheme.primaryColor),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade400,
-                              blurRadius: 6,
-                              offset: Offset(0, 3),
                             ),
                           ],
                         ),
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      ),
+                      Divider(thickness: 0.7, color: Colors.grey[300]),
+                      SizedBox(height: 10.h),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 12.w,
+                          right: 12.w,
+                          bottom: 12.h,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Current Status : ${assetList.assetStatus}',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 15.h),
+                      Text(
+                        'Room Audited: ${controller.selectedRoom}',
+                        style: TextStyle(
+                          fontSize: 16.67,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.grayColor,
+                        ),
+                      ),
+                      SizedBox(height: 15.h),
+                      Text(
+                        'Current Owner',
+                        style: TextStyle(
+                          fontSize: 16.67.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        assetList.ownerName == null
+                            ? 'Owner Not found'
+                            : assetList.ownerName.toString(),
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              assetList.ownerName == null
+                                  ? AppTheme.dangerColor
+                                  : AppTheme.grayColor,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              // controller.updateAssets();
+                              showModel(context);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 5.h,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(32.sp),
+                                color: AppTheme.secondaryColor,
+                                border: Border.all(color: AppTheme.primaryColor),
+                              ),
+                              child: Text(
+                                'Update Owner',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.h),
+                      Text(
+                        'Product Model',
+                        style: TextStyle(
+                          fontSize: 16.67.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        assetList.productModel.toString(),
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.grayColor,
+                        ),
+                      ),
+            
+                      SizedBox(height: 10.h),
+                      Text(
+                        'Modified By',
+                        style: TextStyle(
+                          fontSize: 16.67.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                       controller.currentUserMail.value,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.grayColor,
+                        ),
+                      ),
+                      SizedBox(height: 15.h),
+                      Text(
+                        'Audit Status',
+                        style: TextStyle(
+                          fontSize: 16.87.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+            
+                      // check(
+                      //   controller.selectedRoomId == assetList.customRoom
+                      //       ? "Room Mathched"
+                      //       : "Not Matched",
+                      //   controller.selectedRoomId == assetList.customRoom
+                      //       ? LucideIcons.circleCheck
+                      //       : LucideIcons.circle,
+                      // ),
+                      Text(
+                        controller.selectedRoomId == assetList.customRoom
+                            ? 'Location Verified: Asset is placed in the correct location.'
+                            : 'Location Mismatch: Asset found in a different location than expected.',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              controller.selectedRoomId == assetList.customRoom
+                                  ? AppTheme.blackColor
+                                  : AppTheme.dangerColor,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      controller.selectedRoomId == assetList.customRoom
+                          ? Container()
+                          : InkWell(
+                            onTap: () {
+                              // Handle save logic here
+                              // Example: controller.updateAssetOwner();
+            
+                              Get.dialog(
+                                AlertDialog(
+                                  backgroundColor: AppTheme.whiteColor,
+                                  title: Text('Are Your sure'),
+                                  content: Text(
+                                    'Are your sure to update location',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Get.back();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Get.back();
+                                        Get.snackbar(
+                                          'Success',
+                                          'Asset owner updated successfully',
+                                          // snackPosition: SnackPosition.BOTTOM,
+                                          backgroundColor: const Color.fromARGB(
+                                            255,
+                                            9,
+                                            143,
+                                            58,
+                                          ),
+                                          colorText: Colors.white,
+                                        );
+                                      },
+                                      child: Text('Update Location'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(32.sp),
+                            child: Row(
+                              children: [
+                                Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 5.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(32.sp),
+                                    color: AppTheme.secondaryColor,
+                                    border: Border.all(
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Update Location',
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      SizedBox(height: 30.h),
+            
+                      // Confirm Button
+                      InkWell(
+                        onTap: () {
+                          if(assetList.ownerName != null){
+                            controller.setCurrentAssetStatus();
+                          controller.addScannedAssets();
+                          controller.updateAssetStatus(
+                            auditNumber: controller.auditNumber,
+                            assetNumber: assetList.assetNo.toString(),
+                            building: controller.buildingId,
+                            floor: controller.selectedFloorId.value,
+                            auditType: 'Issued Audit',
+                            assetStatus: controller.currentAssetStatus.value,
+                            assetOwner: assetList.ownerUser.toString(),
+                            storeName: assetList.store  == null ? '': assetList.store.toString(),
+                            activityBy: controller.currentUserMail.value,
+                            room: controller.selectedRoomId.value,
+                          );
+                          }else{
+                            Get.snackbar('Select User', 'The owen is not selected');
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(32),
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 8.h,
+                            horizontal: 30.w,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            gradient: AppTheme.primaryGradient,
+                            border: Border.all(color: AppTheme.primaryColor),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade400,
+                                blurRadius: 6,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Confirm',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       }),

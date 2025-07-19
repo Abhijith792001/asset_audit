@@ -16,5 +16,8 @@ class StorageManager {
   Future deleteAll() async {
     await appStorage.deleteAll();
   }
+    Future<void> delete(String key) async {
+    await appStorage.delete(key: key);
+  }
 }
 

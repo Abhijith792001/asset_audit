@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class SplashPage extends GetView<SplashController> {
-  const SplashPage({super.key});
-
+class SplashPage extends StatelessWidget {
+  SplashPage({super.key});
+  final SplashController controller = Get.find<SplashController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,11 @@ class SplashPage extends GetView<SplashController> {
             SizedBox(height: 10.h),
             Text(
               'Powered by My Amrita',
-              style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade500,fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

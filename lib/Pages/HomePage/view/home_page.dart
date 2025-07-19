@@ -1,3 +1,4 @@
+import 'package:asset_audit/Authentication/controller/auth_controller.dart';
 import 'package:asset_audit/Pages/HomePage/controller/home_controller.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
@@ -8,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class HomePage extends GetView<HomeController> {
-  const HomePage({super.key});
-
+  HomePage({super.key});
+  final AuthController _authControler = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +64,7 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ),
                                   Text(
-                                    'Abhijith 👋🏼',
+                                    _authControler.currentUser.value!.name.toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13.sp,
@@ -126,42 +127,52 @@ class HomePage extends GetView<HomeController> {
                                 );
                               }
                               return Expanded(
-                                child: ListView.builder(
-                                  itemCount: controller.auditList.length,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    final audits = controller.auditList[index];
-                                    return audits.building == null
-                                        ? Container()
-                                        : InkWell(
-                                          onTap: () => {},
-                                          child: InkWell(
-                                            onTap:
-                                                () => {
-                                                  Get.offNamed(
-                                                    arguments: {
-                                                      'auditNumber': audits.auditNumber,
-                                                      'buildingId':
-                                                          audits.building,
-                                                      'buildingName':
-                                                          audits.building_name,
-                                                          'dueDate' : audits.dueDate,
-                                                    },
-                                                    AppRoutes.auditingPage,
-                                                  ),
-                                                },
-                                            child: BuildingListCard(
-                                              buildingName: audits.auditNumber,
-                                              auditType: audits.auditType,
-                                              auditId:
-                                                  audits.building_name
-                                                      .toString(),
-                                            ),
-                                          ),
-                                        );
+                                child: RefreshIndicator(
+                                  onRefresh: () async {
+                                    controller.fetchAudit();
                                   },
+                                  child: ListView.builder(
+                                    itemCount: controller.auditList.length,
+                                    itemBuilder: (
+                                      BuildContext context,
+                                      int index,
+                                    ) {
+                                      final audits =
+                                          controller.auditList[index];
+                                      return audits.building == null
+                                          ? Container()
+                                          : InkWell(
+                                            onTap: () => {},
+                                            child: InkWell(
+                                              onTap:
+                                                  () => {
+                                                    Get.offNamed(
+                                                      arguments: {
+                                                        'auditNumber':
+                                                            audits.auditNumber,
+                                                        'buildingId':
+                                                            audits.building,
+                                                        'buildingName':
+                                                            audits
+                                                                .building_name,
+                                                        'dueDate':
+                                                            audits.dueDate,
+                                                      },
+                                                      AppRoutes.auditingPage,
+                                                    ),
+                                                  },
+                                              child: BuildingListCard(
+                                                buildingName:
+                                                    audits.auditNumber,
+                                                auditType: audits.auditType,
+                                                auditId:
+                                                    audits.building_name
+                                                        .toString(),
+                                              ),
+                                            ),
+                                          );
+                                    },
+                                  ),
                                 ),
                               );
                             }),

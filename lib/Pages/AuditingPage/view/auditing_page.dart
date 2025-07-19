@@ -19,187 +19,208 @@ class AuditingPage extends GetView<AuditingController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.whiteColor,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Get.toNamed(AppRoutes.barcodePage);
-          controller.scanAndFetch(context);
-          
-        },
-        icon: Icon(LucideIcons.qrCode, color: AppTheme.whiteColor),
-        label: Text(
-          'Scan Assets',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.whiteColor,
-          ),
-        ),
-        backgroundColor: AppTheme.primaryColor,
-      ),
-      appBar: AppBar(
-        toolbarHeight: 70,
-        leading: InkWell(
-          onTap: () => {Get.offAllNamed(AppRoutes.homePage)},
-          child: Icon(LucideIcons.chevronLeft, color: AppTheme.whiteColor),
-        ),
-        title: Text(
-          buildingName,
-          style: TextStyle(color: AppTheme.whiteColor, fontSize: 19),
-        ),
-        backgroundColor: AppTheme.primaryColor,
-      ),
-      body: SafeArea(
-        maintainBottomViewPadding: true,
-        // minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Auditing',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      color: AppTheme.primaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      'End: ${dueDate}',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked:
+          (didPop) => {
+            if (!didPop) {Get.offNamed(AppRoutes.homePage)},
+          },
+      child: Scaffold(
+        backgroundColor: AppTheme.whiteColor,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            // Get.toNamed(AppRoutes.barcodePage);
+            controller.scanAndFetch(context);
+          },
+          icon: Icon(LucideIcons.qrCode, color: AppTheme.whiteColor),
+          label: Text(
+            'Scan Assets',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.whiteColor,
             ),
-            SizedBox(height: 10.h),
-            Obx(
-              () => Padding(
-                padding: EdgeInsets.only(left: 16.w, right: 16.w),
+          ),
+          backgroundColor: AppTheme.primaryColor,
+        ),
+        appBar: AppBar(
+          toolbarHeight: 70,
+          leading: InkWell(
+            onTap: () => {Get.offAllNamed(AppRoutes.homePage)},
+            child: Icon(LucideIcons.chevronLeft, color: AppTheme.whiteColor),
+          ),
+          title: Text('Auditing', style: TextStyle(color: AppTheme.whiteColor)),
+          backgroundColor: AppTheme.primaryColor,
+          actions: [],
+        ),
+        body: SafeArea(
+          maintainBottomViewPadding: true,
+          // minimum: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      child: CustomDropdown(
-                        hint: 'Select Floor',
-                        selectedValue:
-                            controller.floors
-                                    .map((f) => f.customFloor)
-                                    .contains(controller.selectedFloor.value)
-                                ? controller.selectedFloor.value
-                                : null,
-                        items:
-                            controller.floors
-                                .map((floor) => floor.customFloor.toString())
-                                .toList(),
-                        onChanged:
-                            (value) => controller.setSelectedFloor(value),
+                      child: Text(
+                        buildingName,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                    SizedBox(width: 10.w),
-                    Flexible(
-                      child: CustomDropdown(
-                        hint: 'Select Room',
-                        selectedValue:
-                            controller.rooms
-                                    .map((f) => f.customRoom)
-                                    .contains(controller.selectedRoom.value)
-                                ? controller.selectedRoom.value
-                                : null,
-                        items:
-                            controller.rooms
-                                .map((room) => room.customRoom.toString())
-                                .toList(),
-                        onChanged: (value) => controller.setSelectedRoom(value),
+                    SizedBox(width: 10.h),
+                    Obx(
+                      () => Flexible(
+                        child: CustomDropdown(
+                          hint: 'Select Floor',
+                          selectedValue:
+                              controller.floors
+                                      .map((f) => f.customFloor)
+                                      .contains(controller.selectedFloor.value)
+                                  ? controller.selectedFloor.value
+                                  : null,
+                          items:
+                              controller.floors
+                                  .map((floor) => floor.customFloor.toString())
+                                  .toList(),
+                          onChanged:
+                              (value) => controller.setSelectedFloor(value),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 10.h),
-            Padding(
-              padding: EdgeInsets.only(left: 16.w, right: 16.w),
-              child: Obx(() {
-                if (controller.selectedFloor.isEmpty) {
-                  return Text(
-                    'Please select a floor to continue',
-                    style: TextStyle(color: AppTheme.successColor),
-                  );
-                }
-                if (controller.rooms.isEmpty) {
-                  return Text(
-                    'No rooms found for the selected floor',
-                    style: TextStyle(color: AppTheme.dangerColor),
-                  );
-                }
-                if (controller.selectedRoom.isEmpty) {
-                  return Text(
-                    'Select your room to proceed',
-                    style: TextStyle(color: AppTheme.successColor),
-                  );
-                }
-                return const SizedBox(); // All selections done
-              }),
-            ),
-
-            SizedBox(height: 20.h),
-            Padding(
-                   padding:  EdgeInsets.only(left: 16.w,right: 16.w,),
-              child: Row(
-                children: [
-                  Icon(Icons.history, color: AppTheme.blackColor, size: 20.sp),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Recently Scanned Assets',
-                    style: TextStyle(
-                      fontSize: 16.87.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.blackColor,
-                    ),
+              SizedBox(height: 10.h),
+              Obx(
+                () => Padding(
+                  padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                  child: CustomDropdown(
+                    hint: 'Select Room',
+                    selectedValue:
+                        controller.rooms
+                                .map((f) => f.customRoom)
+                                .contains(controller.selectedRoom.value)
+                            ? controller.selectedRoom.value
+                            : null,
+                    items:
+                        controller.rooms
+                            .map((room) => room.customRoom.toString())
+                            .toList(),
+                    onChanged: (value) => controller.setSelectedRoom(value),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Obx(
-              () => Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  itemCount: controller.RecentscannedAssets.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final assets = controller.RecentscannedAssets[index];
-                    return Column(
-                      children: [
-                        SizedBox(height: 5.h,),
-                        AssetCard(
-                          assetName: assets.assetNo.toString(),
-                          status: assets.assetStatus.toString(),
-                        ),
-                      ],
-                    );
-                  },
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 10.h),
+              Padding(
+                padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                child: Obx(() {
+                  if (controller.selectedFloor.isEmpty) {
+                    return Text(
+                      'Please select a floor to continue',
+                      style: TextStyle(color: AppTheme.dangerColor),
+                    );
+                  }
+                  if (controller.rooms.isEmpty) {
+                    return Text(
+                      'No rooms found for the selected floor',
+                      style: TextStyle(color: AppTheme.dangerColor),
+                    );
+                  }
+                  if (controller.selectedRoom.isEmpty) {
+                    return Text(
+                      'Select your room to proceed',
+                      style: TextStyle(color: AppTheme.dangerColor),
+                    );
+                  }
+                  return const SizedBox(); // All selections done
+                }),
+              ),
+
+              SizedBox(height: 10.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: () => {controller.clearAudit()},
+                    child: BadgeBtn(title: 'Clear History'),
+                  ),
+                  SizedBox(width: 16.w),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 10.h),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.history,
+                      color: AppTheme.blackColor,
+                      size: 20.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      'Recently Scanned Assets',
+                      style: TextStyle(
+                        fontSize: 16.87.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.blackColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Obx(
+                () => Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: controller.RecentscannedAssets.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final assets = controller.RecentscannedAssets[index];
+                      return Column(
+                        children: [
+                          SizedBox(height: 5.h),
+                          AssetCard(
+                            assetName: assets.assetNo.toString(),
+                            status: assets.assetStatus.toString(),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BadgeBtn extends StatelessWidget {
+  const BadgeBtn({super.key, required this.title});
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // margin: EdgeInsets.only(right: 16.w,bottom: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+      decoration: BoxDecoration(
+        color: AppTheme.secondaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(8.w)),
+      ),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: AppTheme.primaryColor,
         ),
       ),
     );

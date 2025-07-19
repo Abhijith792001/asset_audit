@@ -1,3 +1,4 @@
+import 'package:asset_audit/Authentication/controller/auth_controller.dart';
 import 'package:asset_audit/routes/app_pages.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
@@ -6,7 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 main() {
-  
+  WidgetsFlutterBinding.ensureInitialized();
+  Get.put(AuthController()); // 👈 Very important
   runApp(MyApp());
 }
 
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           getPages: AppPages.pages,
-          initialRoute: AppRoutes.registrationPage,
+          initialRoute: AppRoutes.splashPage,
           theme: ThemeData(
             fontFamily: 'Poppins',
             colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryColor),

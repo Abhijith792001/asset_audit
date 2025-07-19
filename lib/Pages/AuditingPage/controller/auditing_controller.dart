@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asset_audit/theme/app_theme.dart';
 import 'package:dio/dio.dart' as appDio;
 import 'package:asset_audit/Pages/AuditingPage/model/floor_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/room_model.dart';
@@ -30,7 +31,7 @@ class AuditingController extends GetxController {
   RxString selectedFloorId = ''.obs;
   RxString currentAssetStatus = ''.obs;
   RxBool isLoading = false.obs;
-
+  RxString currentUserMail = ''.obs;
   RxString statusValueOfAsset = ''.obs;
 
   RxString selectedUser = ''.obs;
@@ -50,6 +51,7 @@ class AuditingController extends GetxController {
 
     getRecentAssets();
     getUser();
+    getUserMail();
     setCurrentAssetStatus();
     // updateAssets();
     if (buildingId.isNotEmpty) {
@@ -182,8 +184,33 @@ class AuditingController extends GetxController {
       if (result != null && result.isNotEmpty && result != '-1') {
         barcode.value = result;
 
-        await getAsset(result);
+        // Check if scanned already
+        var existingData = await appStorage.read("scannedAssets");
+        if (existingData != null) {
+          List<dynamic> decoded = jsonDecode(existingData);
+          final existingScans =
+              decoded
+                  .map((e) => ScannedModel.fromJson(e as Map<String, dynamic>))
+                  .toList();
 
+          final alreadyScanned = existingScans.any(
+            (item) => item.assetNo == result,
+          );
+
+          if (alreadyScanned) {
+            Get.snackbar(
+              'Duplicate Scan',
+              'This asset was already scanned!',
+              backgroundColor: Colors.orange,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            return; // stop here
+          }
+        }
+
+        // Not scanned yet → proceed
+        await getAsset(result);
         Get.toNamed(AppRoutes.assetViewPage);
       }
     }
@@ -200,7 +227,21 @@ class AuditingController extends GetxController {
         if (assetList.isNotEmpty) {
           assets.value = await [AssetModel.fromJson(assetList)];
 
-          selectedUser.value = assets.value.first.owner.toString();
+          final assetOwnerEmail =
+              assets.value.first.ownerUser?.toString() ?? '';
+
+          final matchedUser = users.firstWhereOrNull(
+            (user) =>
+                user.email == assetOwnerEmail || user.name == assetOwnerEmail,
+          );
+
+          if (matchedUser != null) {
+            selectedUser.value = matchedUser.name ?? '';
+          } else {
+            selectedUser.value = '';
+            print("No matching user found for asset owner: $assetOwnerEmail");
+          }
+
           print(selectedUser.value);
           print(assets.value.first);
         } else {
@@ -287,33 +328,6 @@ class AuditingController extends GetxController {
     selectedUser.value = value;
   }
 
-  // updateAssets() async {
-  //   try {
-  //     isLoading.value = true;
-  //     appDio.Response response = await apiService
-  //         .postApi('create_audit_analysis', {
-  //           "audit_number": "AUD0006",
-  //           "asset": "25test9874",
-  //           "building": "B04",
-  //           "floor": "F002",
-  //           "room": "R0430",
-  //           "audit_type": "Issued Audit",
-  //           "audit_status": "Location Updated",
-  //           "asset_owner": "aswathyprs@am.amrita.edu",
-  //           "store": "ASE-0F-Store-Basement",
-  //         });
-  //     if (response.statusCode == 200) {
-  //       Get.snackbar('Success', 'Posted data Successfully');
-  //     } else {
-  //       Get.snackbar('Failed', 'Check your api');
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar('Error', e.toString());
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   Future updateAssetStatus({
     required String auditNumber,
     required String assetNumber,
@@ -361,27 +375,75 @@ class AuditingController extends GetxController {
   }
 
   void setCurrentAssetStatus() {
-  if (assets.isEmpty) {
-    currentAssetStatus.value = '';
-    return;
+    if (assets.isEmpty) {
+      currentAssetStatus.value = '';
+      return;
+    }
+
+    final roomMatch = selectedRoomId.value == assets.first.customRoom;
+    final ownerMatch = selectedUser.value == assets.first.owner;
+
+    if (roomMatch && ownerMatch) {
+      currentAssetStatus.value = 'Properly Placed';
+    } else if (!roomMatch && !ownerMatch) {
+      currentAssetStatus.value = 'Asset Reallocated';
+    } else if (!roomMatch) {
+      currentAssetStatus.value = 'Location Updated';
+    } else if (!ownerMatch) {
+      currentAssetStatus.value = 'Owner Updated';
+    } else {
+      currentAssetStatus.value = 'Unknown Asset';
+    }
+
+    print('Asset Status: ${currentAssetStatus.value}');
   }
 
-  final roomMatch = selectedRoomId.value == assets.first.customRoom;
-  final ownerMatch = selectedUser.value == assets.first.owner;
-
-  if (roomMatch && ownerMatch) {
-    currentAssetStatus.value = 'Properly Placed';
-  } else if (!roomMatch && !ownerMatch) {
-    currentAssetStatus.value = 'Asset Reallocated';
-  } else if (!roomMatch) {
-    currentAssetStatus.value = 'Location Updated';
-  } else if (!ownerMatch) {
-    currentAssetStatus.value = 'Owner Updated';
-  } else {
-    currentAssetStatus.value = 'Unknown Asset';
+  clearAudit() async {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: AppTheme.whiteColor,
+        title: Text('Are you sure?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text(
+              'Cancel',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await appStorage.delete('scannedAssets');
+              scannedAssets.clear();
+              RecentscannedAssets.clear();
+              Get.back();
+              final deletedData = await appStorage.read('scannedAssets');
+              print("scannedAssets after delete: $deletedData");
+              Get.back();
+            },
+            child: Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
   }
 
-  print('Asset Status: ${currentAssetStatus.value}');
-}
+  deleteSelectedScanedAsset(String id) async {
+    var data = await appStorage.read('scannedAssets');
+    if (data != null) {
+      List<dynamic> decoded = jsonDecode(data);
+      decoded.removeWhere((item) => item['asset_no'] == id);
+      await appStorage.write('scannedAssets', jsonEncode(decoded));
+      getRecentAssets();
+      Get.snackbar('Deleted', 'Asset removed successfully');
+    }
+  }
 
+  getUserMail() async {
+    final value = await appStorage.read('userMail');
+    currentUserMail.value = value ?? '';
+    print(currentUserMail.value);
+  }
 }

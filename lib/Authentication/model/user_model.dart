@@ -1,7 +1,7 @@
 class UserModel {
   String? name;
   String? email;
-  int? mPin;
+  String? mPin;
 
   UserModel({
     this.name,
@@ -13,7 +13,7 @@ class UserModel {
     return UserModel(
       name: json['name'] as String?,
       email: json['email'] as String?,
-      mPin: json['mPin'] as int?,
+      mPin: json['mPin'] as String?,
     );
   }
 

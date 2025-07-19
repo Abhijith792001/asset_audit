@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'package:asset_audit/Authentication/model/user_model.dart';
 import 'package:asset_audit/routes/app_routes.dart';
-import 'package:get/get.dart';
+import 'package:asset_audit/utils/storage_manager.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:get/get.dart';
 
 class SplashController extends GetxController {
+  final StorageManager _storage = StorageManager();
+  final String _userKey = 'user';
+
   @override
   void onInit() {
     super.onInit();
@@ -11,25 +17,30 @@ class SplashController extends GetxController {
 
   void _initializeApp() async {
     try {
-      // Delay native splash for only 0.1 second
-      // await Future.delayed(const Duration(milliseconds: 0));
-
-      // Remove native splash screen immediately after
       FlutterNativeSplash.remove();
-
-      // Optional: Keep your own Flutter splash visible for 1 second
       await Future.delayed(const Duration(seconds: 2));
 
-      // Navigate to Home Page
-      Get.offAllNamed(AppRoutes.loginPage);
+      final userData = await _storage.read(_userKey);
+
+      if (userData != null) {
+        final userJson = jsonDecode(userData);
+        final user = UserModel.fromJson(userJson);
+
+        if (user.mPin != null && user.mPin!.isNotEmpty) {
+          // User has mPin, go to mPin login page
+          Get.offAllNamed(AppRoutes.loginPage);
+        } else {
+          // User exists but no mPin, go to normal login
+          Get.offAllNamed(AppRoutes.loginPage);
+        }
+      } else {
+        // No user found, go to registration page
+        Get.offAllNamed(AppRoutes.registrationPage);
+      }
     } catch (e) {
       print('Error during initialization: $e');
-      try {
-        FlutterNativeSplash.remove();
-      } catch (splashError) {
-        print('Could not remove native splash: $splashError');
-      }
-      // Get.offAllNamed(AppRoutes.homePage);
+      FlutterNativeSplash.remove();
+      Get.offAllNamed(AppRoutes.registrationPage); // fallback
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:asset_audit/Authentication/binding/auth_binding.dart';
 import 'package:asset_audit/Authentication/view/login_page.dart';
 import 'package:asset_audit/Authentication/view/registration_page.dart';
 import 'package:get/get.dart';
@@ -37,11 +38,13 @@ class AppPages {
     GetPage(
       name: AppRoutes.registrationPage,
       page: () => RegistrationPage(),
+      binding: AuthBinding()
     ),
    
     GetPage(
       name: AppRoutes.loginPage,
-      page: () => LoginPage(),
+      page: () => MPinLoginPage(),
+      binding: AuthBinding()
     ),
    
   ];
