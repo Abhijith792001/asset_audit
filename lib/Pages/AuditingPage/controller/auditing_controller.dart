@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:asset_audit/Pages/AuditingPage/model/pending_rooms_by_floor.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:dio/dio.dart' as appDio;
 import 'package:asset_audit/Pages/AuditingPage/model/floor_model.dart';
@@ -22,6 +24,11 @@ class AuditingController extends GetxController {
   RxList<AssetModel> assets = <AssetModel>[].obs;
   RxList<ScannedModel> scannedAssets = <ScannedModel>[].obs;
   RxList<ScannedModel> RecentscannedAssets = <ScannedModel>[].obs;
+
+  RxList<PendingRoomsByFloorModel> pendingFloors =
+      <PendingRoomsByFloorModel>[].obs;
+  RxList<Rooms> pendingRooms = <Rooms>[].obs;
+
   RxList<CustomUsers> users = <CustomUsers>[].obs;
 
   RxString selectedFloor = ''.obs;
@@ -45,7 +52,7 @@ class AuditingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     buildingId = Get.arguments?['buildingId'] ?? '';
     buildingName = Get.arguments?['buildingName'] ?? '';
     dueDate = Get.arguments?['dueDate'] ?? '';
@@ -57,11 +64,11 @@ class AuditingController extends GetxController {
     setCurrentAssetStatus();
     // updateAssets();
     if (buildingId.isNotEmpty) {
-      getFloor(buildingId);
     } else {
       print('No building ID provided');
     }
     print(buildingId);
+    fetchRoom('B04');
   }
 
   void getRecentAssets() async {
@@ -77,26 +84,6 @@ class AuditingController extends GetxController {
       RecentscannedAssets.value = finalData;
     } else {
       RecentscannedAssets.clear(); // Optional: clear if nothing in storage
-    }
-  }
-
-  // Fetch Floors by Building ID
-  void getFloor(String buildingId) async {
-    try {
-      isLoading.value = true;
-      final response = await apiService.getApi(
-        'get_lm_floor?custom_building=$buildingId',
-      );
-
-      if (response != null && response['message']?['custom_floor'] != null) {
-        final floorModel = FloorModel.fromJson(response);
-        final floorList = floorModel.message?.customFloor ?? [];
-        floors.assignAll(floorList);
-      }
-    } catch (e) {
-      print('Error fetching floor: $e');
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -147,20 +134,20 @@ class AuditingController extends GetxController {
     }
   }
 
-  // Handle room selection
-  void setSelectedRoom(String value) {
-    selectedRoom.value = value;
+  // // Handle room selection
+  // void setSelectedRoom(String value) {
+  //   selectedRoom.value = value;
 
-    print(
-      'Selected Floor: ${selectedFloor.value}, Selected Room: ${selectedRoom.value}',
-    );
-    final roomTake = rooms.firstWhere(
-      (floor) => floor.customRoom == value,
-      orElse: () => CustomRoom(name: '', customRoom: ''),
-    );
-    selectedRoomId.value = roomTake.name.toString();
-    print(roomTake.name);
-  }
+  //   print(
+  //     'Selected Floor: ${selectedFloor.value}, Selected Room: ${selectedRoom.value}',
+  //   );
+  //   final roomTake = rooms.firstWhere(
+  //     (floor) => floor.customRoom == value,
+  //     orElse: () => CustomRoom(name: '', customRoom: ''),
+  //   );
+  //   selectedRoomId.value = roomTake.name.toString();
+  //   print(roomTake.name);
+  // }
 
   //Barcode
   Future<void> scanAndFetch(BuildContext context) async {
@@ -341,7 +328,7 @@ class AuditingController extends GetxController {
     required String assetOwner,
     String? storeName,
     required String activityBy,
-    required String assetStatusOfCurrent
+    required String assetStatusOfCurrent,
   }) async {
     try {
       isLoading.value = true;
@@ -357,7 +344,7 @@ class AuditingController extends GetxController {
         'asset_owner': assetOwner,
         'store': storeName,
         'activity_by': currentUserMail.value,
-        'current_status':statusAsset.value
+        'current_status': statusAsset.value,
       };
 
       appDio.Response response = await apiService.postApi(
@@ -456,8 +443,40 @@ class AuditingController extends GetxController {
     print(currentUserMail.value);
   }
 
+  fetchRoom(String buildingId) async {
+    final data = {"building": 'B04'};
+    appDio.Response response = await apiService.postApi(
+      'get_pending_rooms_by_building',
+      data,
+    );
+    // log('${response.data}');
+    pendingFloors.value =
+        await [PendingRoomsByFloorModel.fromJson(response.data)].toList();
 
+    // log('${jsonEncode(pendingFloors.value)}');
+  }
 
+  setSelectedPendingFloor(String value) async {
+    selectedFloor.value = value;
+    selectedRoom.value = '';
+    final filteredData =
+        pendingFloors.first.message!.pendingRoomsByFloor!
+            .where((e) => e.floorName == value)
+            .map((e) => e.rooms)
+            .first;
+    print(jsonEncode(filteredData));
+    if (filteredData != null && filteredData.length != 0) {
+      pendingRooms.value =
+          await filteredData
+              .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
+              .toList();
+    }
+  }
 
-
+  setSelectedPendingRoom(String room) {
+    log(room);
+    if (room != null) {
+      selectedRoom.value = room.trim();
+    }
+  }
 }

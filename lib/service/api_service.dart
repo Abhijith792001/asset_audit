@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:asset_audit/service/common_interceptors.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as get_pack;
@@ -34,7 +36,7 @@ class ApiService {
     try {
       Response response = await dio.post(
         'https://icts.amrita.ac.in/api/method/helpdesk.api.doc.$value',
-        data: data,
+        data: json.encode(data),
       );
      return response;
     } catch (e) {

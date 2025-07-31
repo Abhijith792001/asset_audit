@@ -13,8 +13,11 @@ class AuditingPage extends GetView<AuditingController> {
   AuditingPage({super.key});
 
   final buildingId = Get.arguments['buildingId'];
+    // final buildingId = "B04";
   final buildingName = Get.arguments['buildingName'];
-  final dueDate = Get.arguments['dueDate'];
+  // final buildingName = "Abhi Block";
+  // final dueDate = Get.arguments['dueDate'];
+  // final dueDate ='464';
   final appStorage = StorageManager();
 
   final _assetNumber = TextEditingController();
@@ -68,7 +71,8 @@ class AuditingPage extends GetView<AuditingController> {
                   children: [
                     Flexible(
                       child: Text(
-                        buildingName,
+                      buildingName,
+                      
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: AppTheme.primaryColor,
@@ -82,17 +86,17 @@ class AuditingPage extends GetView<AuditingController> {
                         child: CustomDropdown(
                           hint: 'Select Floor',
                           selectedValue:
-                              controller.floors
-                                      .map((f) => f.customFloor)
+                        controller.pendingFloors.value.length==0?null:      controller.pendingFloors.value.first.message!.pendingRoomsByFloor!
+                                      .map((f) => f.floorName)
                                       .contains(controller.selectedFloor.value)
                                   ? controller.selectedFloor.value
                                   : null,
                           items:
-                              controller.floors
-                                  .map((floor) => floor.customFloor.toString())
+                               controller.pendingFloors.value.length==0?[]: controller.pendingFloors.value.first.message!.pendingRoomsByFloor!
+                                  .map((floor) => floor.floorName.toString())
                                   .toList(),
                           onChanged:
-                              (value) => controller.setSelectedFloor(value),
+                              (value) => controller.setSelectedPendingFloor(value),
                         ),
                       ),
                     ),
@@ -104,18 +108,14 @@ class AuditingPage extends GetView<AuditingController> {
                 () => Padding(
                   padding: EdgeInsets.only(left: 16.w, right: 16.w),
                   child: CustomDropdown(
+                    
                     hint: 'Select Room',
-                    selectedValue:
-                        controller.rooms
-                                .map((f) => f.customRoom)
-                                .contains(controller.selectedRoom.value)
-                            ? controller.selectedRoom.value
-                            : null,
+                    selectedValue:controller.selectedRoom.value == null ?'' :  controller.selectedRoom.value.trim(),
                     items:
-                        controller.rooms
-                            .map((room) => room.customRoom.toString())
+                    controller.pendingRooms.length == 0 ?[]:    controller.pendingRooms
+                            .map((room) =>room.roomId.toString()+" - " +room.roomName.toString().trim())
                             .toList(),
-                    onChanged: (value) => controller.setSelectedRoom(value),
+                    onChanged: (value) => controller.setSelectedPendingRoom(value),
                   ),
                 ),
               ),
@@ -144,7 +144,6 @@ class AuditingPage extends GetView<AuditingController> {
                   return const SizedBox(); // All selections done
                 }),
               ),
-
               SizedBox(height: 10.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
