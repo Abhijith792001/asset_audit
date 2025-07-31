@@ -213,7 +213,7 @@ class AssetViewPage extends StatelessWidget {
                       ),
                       SizedBox(height: 5.h),
                       Text(
-                       controller.selectedUser.value == ""
+                        controller.selectedUser.value == ""
                             ? 'Owner Not found'
                             : controller.selectedUser.value.toString(),
                         style: TextStyle(
@@ -242,7 +242,9 @@ class AssetViewPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(32.sp),
                                 color: AppTheme.secondaryColor,
-                                border: Border.all(color: AppTheme.primaryColor),
+                                border: Border.all(
+                                  color: AppTheme.primaryColor,
+                                ),
                               ),
                               child: Text(
                                 'Update Owner',
@@ -273,7 +275,7 @@ class AssetViewPage extends StatelessWidget {
                           color: AppTheme.grayColor,
                         ),
                       ),
-            
+
                       SizedBox(height: 10.h),
                       Text(
                         'Modified By',
@@ -284,7 +286,7 @@ class AssetViewPage extends StatelessWidget {
                       ),
                       SizedBox(height: 5.h),
                       Text(
-                       controller.currentUserMail.value,
+                        controller.currentUserMail.value,
                         style: TextStyle(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
@@ -300,7 +302,7 @@ class AssetViewPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 5.h),
-            
+
                       // check(
                       //   controller.selectedRoomId == assetList.customRoom
                       //       ? "Room Mathched"
@@ -326,23 +328,30 @@ class AssetViewPage extends StatelessWidget {
                       // Confirm Button
                       InkWell(
                         onTap: () {
-                          if(controller.selectedUser.value!=""){
+                          if (controller.selectedUser.value != "") {
                             controller.setCurrentAssetStatus();
-                          controller.addScannedAssets();
-                          controller.updateAssetStatus(
-                            auditNumber: controller.auditNumber,
-                            assetNumber: assetList.assetNo.toString(),
-                            building: controller.buildingId,
-                            floor: controller.selectedFloorId.value,
-                            auditType: 'Issued Audit',
-                            assetStatus: controller.currentAssetStatus.value,
-                            assetOwner: controller.selectedUser.value,
-                            storeName: assetList.store  == null ? '': assetList.store.toString(),
-                            activityBy: controller.currentUserMail.value,
-                            room: controller.selectedRoomId.value,
-                          );
-                          }else{
-                            Get.snackbar('Select User', 'The owen is not selected');
+                            controller.addScannedAssets();
+                            controller.updateAssetStatus(
+                              auditNumber: controller.auditNumber,
+                              assetNumber: assetList.assetNo.toString(),
+                              building: controller.buildingId,
+                              floor: controller.selectedFloorId.value,
+                              auditType: 'Issued Audit',
+                              assetStatus: controller.currentAssetStatus.value,
+                              assetOwner: controller.selectedUser.value,
+                              storeName:
+                                  assetList.store == null
+                                      ? ''
+                                      : assetList.store.toString(),
+                              activityBy: controller.currentUserMail.value,
+                              room: controller.selectedRoomId.value,
+                              assetStatusOfCurrent: '',
+                            );
+                          } else {
+                            Get.snackbar(
+                              'Select User',
+                              'The owen is not selected',
+                            );
                           }
                         },
                         borderRadius: BorderRadius.circular(32),

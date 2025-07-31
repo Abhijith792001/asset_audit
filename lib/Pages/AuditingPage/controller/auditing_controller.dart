@@ -33,6 +33,7 @@ class AuditingController extends GetxController {
   RxBool isLoading = false.obs;
   RxString currentUserMail = ''.obs;
   RxString statusValueOfAsset = ''.obs;
+  RxString statusAsset = ''.obs;
 
   RxString selectedUser = ''.obs;
 
@@ -44,6 +45,7 @@ class AuditingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    
     buildingId = Get.arguments?['buildingId'] ?? '';
     buildingName = Get.arguments?['buildingName'] ?? '';
     dueDate = Get.arguments?['dueDate'] ?? '';
@@ -339,6 +341,7 @@ class AuditingController extends GetxController {
     required String assetOwner,
     String? storeName,
     required String activityBy,
+    required String assetStatusOfCurrent
   }) async {
     try {
       isLoading.value = true;
@@ -353,7 +356,8 @@ class AuditingController extends GetxController {
         'audit_status': assetStatus,
         'asset_owner': assetOwner,
         'store': storeName,
-        'activity_by': activityBy,
+        'activity_by': currentUserMail.value,
+        'current_status':statusAsset.value
       };
 
       appDio.Response response = await apiService.postApi(
@@ -381,18 +385,23 @@ class AuditingController extends GetxController {
     }
 
     final roomMatch = selectedRoomId.value == assets.first.customRoom;
-    final ownerMatch = selectedUser.value == assets.first.owner;
+    final ownerMatch = selectedUser.value == assets.first.ownerUser;
 
-    if (roomMatch && ownerMatch) {
+    if (selectedUser == assets.first.ownerUser && roomMatch) {
       currentAssetStatus.value = 'Properly Placed';
+      statusAsset.value = "Completed";
     } else if (!roomMatch && !ownerMatch) {
       currentAssetStatus.value = 'Asset Reallocated';
+      statusAsset.value = "Pending";
     } else if (!roomMatch) {
       currentAssetStatus.value = 'Location Updated';
+      statusAsset.value = "Pending";
     } else if (!ownerMatch) {
       currentAssetStatus.value = 'Owner Updated';
+      statusAsset.value = "Pending";
     } else {
       currentAssetStatus.value = 'Unknown Asset';
+      statusAsset.value = "Pending";
     }
 
     print('Asset Status: ${currentAssetStatus.value}');

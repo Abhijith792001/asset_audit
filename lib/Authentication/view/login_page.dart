@@ -2,97 +2,133 @@ import 'package:asset_audit/Authentication/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:asset_audit/theme/app_theme.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MPinLoginPage extends StatelessWidget {
   MPinLoginPage({super.key});
 
-  final TextEditingController mPinController = TextEditingController();
   final AuthController authController = Get.find<AuthController>();
+  final RxString mPin = ''.obs;
+
+  void onKeyPressed(String value) {
+    if (value == '⌫') {
+      if (mPin.value.isNotEmpty) {
+        mPin.value = mPin.value.substring(0, mPin.value.length - 1);
+      }
+    } else if (mPin.value.length < 6) {
+      mPin.value += value;
+      if (mPin.value.length == 6) {
+        authController.loginWithMPin(mPin.value);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: Get.width,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment(-1, -1),
-            end: Alignment(0.1, 0),
-            colors: [const Color(0xFFFFBFD2), const Color(0xFFF1F2ED)],
+      backgroundColor: const Color(0xFFFDFDFD),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Top Section
+              Column(
+                children: [
+                  SizedBox(height: 40.h),
+                  SvgPicture.asset('assets/images/amrita_logo.svg', width: 110.w),
+                  SizedBox(height: 20.h),
+                  Text("Welcome Back",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      )),
+                  Text("Enter your MPIN",
+                      style: TextStyle(fontSize: 13.sp, color: Colors.black54)),
+                  SizedBox(height: 40.h),
+
+                  // MPIN Indicator
+                  Obx(() => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(6, (index) {
+                          final filled = index < mPin.value.length;
+                          return Container(
+                            margin: EdgeInsets.symmetric(horizontal: 6.w),
+                            width: 14.w,
+                            height: 14.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: filled ? Colors.black : Colors.black26,
+                            ),
+                          );
+                        }),
+                      )),
+                ],
+              ),
+
+              // Keypad Section
+              Column(
+                children: [
+                  buildKeypadRow(['1', '2', '3']),
+                  buildKeypadRow(['4', '5', '6']),
+                  buildKeypadRow(['7', '8', '9']),
+                  buildKeypadRow(['', '0', '⌫']),
+                  SizedBox(height: 30.h),
+                ],
+              ),
+            ],
           ),
         ),
-        padding: EdgeInsets.all(16.sp),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/images/amrita_logo.svg',
-              width: 140.w,
-            ),
-            SizedBox(height: 30.h),
-            Text(
-              "Welcome Back",
-              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
-            ),
-            Text('Enter your MPIN to login', style: TextStyle(fontSize: 12.sp)),
-            SizedBox(height: 30.h),
-            Container(
-              padding: EdgeInsets.only(left: 20.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(16.sp)),
-                border: Border.all(color: Colors.black45),
-              ),
-              child: TextField(
-                controller: mPinController,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                maxLength: 6,
-                decoration: InputDecoration(
-                  hintText: 'Enter Your 6-digit MPIN',
-                  border: InputBorder.none,
-                  counterText: '',
-                ),
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Obx(() => InkWell(
-                  onTap: authController.isLoading.value
-                      ? null
-                      : () {
-                          final mpin = mPinController.text.trim();
-                          if (mpin.length != 6) {
-                            Get.snackbar("Invalid MPIN", "MPIN must be 6 digits");
-                          } else {
-                            authController.loginWithMPin(mpin);
-                          }
-                        },
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
-                    margin: EdgeInsets.symmetric(horizontal: 15.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      gradient: AppTheme.primaryGradient,
-                    ),
-                    child: authController.isLoading.value
-                        ? SizedBox(
-                            height: 20.h,
-                            width: 20.h,
-                            child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+      ),
+    );
+  }
+
+  Widget buildKeypadRow(List<String> values) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: values.map((value) {
+          return value.isEmpty
+              ? SizedBox(width: 70.w)
+              : MinimalKey(title: value, onTap: () => onKeyPressed(value));
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class MinimalKey extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const MinimalKey({super.key, required this.title, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12.r),
+      elevation: 1,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          width: 70.w,
+          height: 60.h,
+          alignment: Alignment.center,
+          child: title == '⌫'
+              ? Icon(Icons.backspace_outlined, size: 22.sp, color: Colors.black54)
+              : Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
                   ),
-                )),
-          ],
+                ),
         ),
       ),
     );
