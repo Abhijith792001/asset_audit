@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:asset_audit/Pages/AuditingPage/model/assets_by_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/audit_assets_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/pending_rooms_by_floor.dart';
 import 'package:asset_audit/theme/app_theme.dart';
@@ -26,7 +27,9 @@ class AuditingController extends GetxController {
   RxList<ScannedModel> scannedAssets = <ScannedModel>[].obs;
   RxList<ScannedModel> RecentscannedAssets = <ScannedModel>[].obs;
 
+  //comparing
   RxList<AuditedAssetsModel> auditAssets = <AuditedAssetsModel>[].obs;
+  RxList<AssetsByRoomModel> roomAssets = <AssetsByRoomModel>[].obs;
 
   RxList<PendingRoomsByFloorModel> pendingFloors =
       <PendingRoomsByFloorModel>[].obs;
@@ -72,6 +75,8 @@ class AuditingController extends GetxController {
     }
     print(buildingId);
     fetchRoom(buildingId);
+
+    // getAllAssetsByRoom('', '', '');
   }
 
   void getRecentAssets() async {
@@ -467,7 +472,7 @@ class AuditingController extends GetxController {
   setSelectedPendingFloor(String value) async {
     selectedFloor.value = value;
     selectedRoom.value = '';
-    auditAssets.value= [];
+    auditAssets.value = [];
 
     final filteredData =
         pendingFloors.first.message!.pendingRoomsByFloor!
@@ -498,7 +503,7 @@ class AuditingController extends GetxController {
       selectedRoom.value = room.trim();
     }
 
-    final roomId = pendingRooms.where((e)=>e.roomName==room).first.roomId;
+    final roomId = pendingRooms.where((e) => e.roomName == room).first.roomId;
     if (roomId != null) {
       selectedRoomId.value = roomId.toString();
       fetchAuditedAssets(
@@ -531,9 +536,121 @@ class AuditingController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Check your api$e');
     } finally {
-       await Future.delayed(Duration(milliseconds: 200));
-       log("tested");
+      await Future.delayed(Duration(milliseconds: 200));
+      log("tested");
       isLoading.value = false;
     }
   }
+
+  getAllAssetsByRoom(String buildingId, String floorId, String roomId) async {
+    
+    final payLoad = {
+      "custom_building": buildingId,
+      "custom_floor": floorId,
+      "custom_room": roomId,
+    };
+    try {
+      isLoading.value = true;
+      appDio.Response response = await apiService.postApi(
+        'get_api_asset_list_filter',
+        payLoad,
+      );
+      if (response != null) {
+        log('room assets is fetched');
+        roomAssets.value = await [AssetsByRoomModel.fromJson(response.data)];
+        missAssetsFinder();
+
+        log('${jsonEncode(roomAssets.value)}');
+      }
+    } catch (e) {
+      log('${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  missAssetsFinder() async {
+    List missingAsset = [];
+        List audit_assetno =
+            auditAssets.first.message!.map((e) => e.asset).toList();
+        List room_assetno = roomAssets.first.message!.map((e) => e.name).toList();
+        for(var element  in room_assetno){
+          if(!audit_assetno.contains(element)){
+    print(element);
+   missingAsset.add(element);
+
+          }
+        }
+        postMissingAsset(assetNumbers: missingAsset);
+
+    //     }
+
+        print('----------------audit-----------> $audit_assetno');
+        print('----------room------------>$room_assetno');
+        print('----------missing Asset------------>$missingAsset');
+
+
+    log(
+      'missing assets--------------------------------------------> ${missingAsset}',
+    );
+
+    log('Need room${jsonEncode(roomAssets.value)}');
+    log('Need value${jsonEncode(auditAssets.value)}');
+  
+  }
+
+
+
+
+Future<void> postMissingAsset({
+  required List assetNumbers,
+}) async {
+  try {
+    if (assetNumbers.isEmpty) {
+      Get.snackbar('No Missing Assets', 'Nothing to post');
+      return;
+    }
+
+    var payload = {
+      "message": assetNumbers.map((e) => {
+            'audit_number': auditNumber,
+            'asset': e.toString(),
+            'building': buildingId,
+            'floor': selectedFloorId.value,
+            'room': selectedRoomId.value,
+            'audit_type': 'Issued Audit',
+            'audit_status': 'Missing Asset',
+            'asset_owner': "", // Don't use assets.first if not correct
+            'store': "",
+            'activity_by': currentUserMail.value,
+            'current_status': 'Pending',
+          }).toList(),
+    };
+
+    print("Payload ------------------------> $payload");
+
+    final appDio.Response response = await apiService.postApi(
+      'create_audit_analysis_muliple',
+      payload,
+    );
+
+    if (response.statusCode == 200) {
+      Get.snackbar('Success', 'Missing Assets Posted');
+      fetchAuditedAssets(
+        buildingId,
+        selectedFloorId.value,
+        selectedRoomId.value,
+      );
+      selectedUser.value = '';
+      print("Response: ${response.data}");
+    } else {
+      Get.snackbar('Error', 'Failed to post. Status: ${response.statusCode}');
+    }
+  } catch (e) {
+    Get.snackbar('Error', e.toString());
+    print('Caught error: ${e.toString()}');
+  }
 }
+
+}
+

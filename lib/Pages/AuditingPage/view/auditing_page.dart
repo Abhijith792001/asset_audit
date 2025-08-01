@@ -50,7 +50,12 @@ class AuditingPage extends GetView<AuditingController> {
           ),
           title: Text('Auditing', style: TextStyle(color: AppTheme.whiteColor)),
           backgroundColor: AppTheme.primaryColor,
-          actions: [BadgeBtn(title: 'Finish'), SizedBox(width: 10.w)],
+          actions: [InkWell(
+            onTap: () {
+              controller.postMissingAsset(assetNumbers: []);
+              controller.getAllAssetsByRoom(buildingId, controller.selectedFloorId.value, controller.selectedRoomId.value);
+            },
+            child: BadgeBtn(title: 'Finish')), SizedBox(width: 10.w)],
         ),
         body: SafeArea(
           maintainBottomViewPadding: true,
