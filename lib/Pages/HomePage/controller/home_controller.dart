@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 class HomeController extends GetxController {
   final ApiService apiService = Get.find<ApiService>();
 
+  RxBool isLoading = false.obs;
+
   RxList<AuditModel> auditList = <AuditModel>[].obs;
 
   @override
@@ -14,24 +16,28 @@ class HomeController extends GetxController {
     fetchAudit();
   }
 
-  void fetchAudit() async{
+  void fetchAudit() async {
+    isLoading.value = true;
     final response = await apiService.getApi('get_api_audit_filter');
 
-    if (response != null && response['message'] != null) {
-      List<AuditModel> audits =
-          (response['message'] as List)
-              .map((json) => AuditModel.fromJson(json))
-              .toList();
-      auditList.value = audits;
-    } else {
-      print('Failed to load audits or no data found.');
+    try {
+      if (response != null && response['message'] != null) {
+        List<AuditModel> audits =
+            (response['message'] as List)
+                .map((json) => AuditModel.fromJson(json))
+                .toList();
+        auditList.value = audits;
+      } else {
+        print('Failed to load audits or no data found.');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Api error ${e.toString()}');
+    } finally {
+      isLoading.value = false;
     }
   }
-  void getBuilding(String id ) async{
-      final response = await apiService.getApi('get_lm_building');
-      
 
+  void getBuilding(String id) async {
+    final response = await apiService.getApi('get_lm_building');
   }
-
-  
 }

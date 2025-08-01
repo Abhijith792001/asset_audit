@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:asset_audit/Pages/AuditingPage/model/audit_assets_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/pending_rooms_by_floor.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:dio/dio.dart' as appDio;
@@ -19,11 +20,13 @@ class AuditingController extends GetxController {
   final ApiService apiService = ApiService();
   StorageManager appStorage = StorageManager();
 
-  RxList<CustomFloor> floors = <CustomFloor>[].obs;
-  RxList<CustomRoom> rooms = <CustomRoom>[].obs;
+  // RxList<CustomFloor> floors = <CustomFloor>[].obs;
+  // RxList<CustomRoom> rooms = <CustomRoom>[].obs;
   RxList<AssetModel> assets = <AssetModel>[].obs;
   RxList<ScannedModel> scannedAssets = <ScannedModel>[].obs;
   RxList<ScannedModel> RecentscannedAssets = <ScannedModel>[].obs;
+
+  RxList<AuditedAssetsModel> auditAssets = <AuditedAssetsModel>[].obs;
 
   RxList<PendingRoomsByFloorModel> pendingFloors =
       <PendingRoomsByFloorModel>[].obs;
@@ -68,7 +71,7 @@ class AuditingController extends GetxController {
       print('No building ID provided');
     }
     print(buildingId);
-    fetchRoom('B04');
+    fetchRoom(buildingId);
   }
 
   void getRecentAssets() async {
@@ -87,52 +90,52 @@ class AuditingController extends GetxController {
     }
   }
 
-  void setSelectedFloor(String value) {
-    // Update floor and reset room every time
-    selectedFloor.value = value;
-    selectedRoom.value = '';
-    rooms.clear(); // Clear room list before fetching new data
+  // void setSelectedFloor(String value) {
+  //   // Update floor and reset room every time
+  //   selectedFloor.value = value;
+  //   selectedRoom.value = '';
+  //   rooms.clear(); // Clear room list before fetching new data
 
-    final selected = floors.firstWhere(
-      (floor) => floor.customFloor == value,
-      orElse: () => CustomFloor(name: '', customFloor: ''),
-    );
-    print("${selected.name} this is selected i need id");
+  //   final selected = floors.firstWhere(
+  //     (floor) => floor.customFloor == value,
+  //     orElse: () => CustomFloor(name: '', customFloor: ''),
+  //   );
+  //   print("${selected.name} this is selected i need id");
 
-    selectedFloorId.value = selected.name.toString();
+  //   // selectedFloorId.value = selected.name.toString();
 
-    if (selected.name != null && selected.name!.isNotEmpty) {
-      getRoom(selected.name!); // Fetch rooms for the new floor
-    } else {
-      rooms.clear();
-    }
+  //   if (selected.name != null && selected.name!.isNotEmpty) {
+  //     getRoom(selected.name!); // Fetch rooms for the new floor
+  //   } else {
+  //     rooms.clear();
+  //   }
 
-    print('User selected new floor: $value');
-  }
+  //   print('User selected new floor: $value');
+  // }
 
-  // Fetch rooms based on floor ID and building ID
-  void getRoom(String floorId) async {
-    try {
-      isLoading.value = true;
-      final response = await apiService.getApi(
-        'get_lm_room?custom_building=$buildingId&custom_floor=$floorId',
-      );
+  // // Fetch rooms based on floor ID and building ID
+  // void getRoom(String floorId) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await apiService.getApi(
+  //       'get_lm_room?custom_building=$buildingId&custom_floor=$floorId',
+  //     );
 
-      if (response != null && response['message']?['custom_room'] != null) {
-        final roomModel = RoomModel.fromJson(response);
-        final roomList = roomModel.message?.customRoom ?? [];
-        rooms.assignAll(roomList);
-      } else {
-        rooms.clear();
-      }
+  //     if (response != null && response['message']?['custom_room'] != null) {
+  //       final roomModel = RoomModel.fromJson(response);
+  //       final roomList = roomModel.message?.customRoom ?? [];
+  //       rooms.assignAll(roomList);
+  //     } else {
+  //       rooms.clear();
+  //     }
 
-      print(rooms);
-    } catch (e) {
-      print('Error fetching rooms: $e');
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  //     print(rooms);
+  //   } catch (e) {
+  //     print('Error fetching rooms: $e');
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   // // Handle room selection
   // void setSelectedRoom(String value) {
@@ -353,6 +356,11 @@ class AuditingController extends GetxController {
       );
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Added Successful');
+        fetchAuditedAssets(
+          buildingId,
+          selectedFloorId.value,
+          selectedRoomId.value,
+        );
         selectedUser.value = '';
         print(response);
         print(currentAssetStatus.value);
@@ -444,12 +452,12 @@ class AuditingController extends GetxController {
   }
 
   fetchRoom(String buildingId) async {
-    final data = {"building": 'B04'};
+    final data = {"building": buildingId};
     appDio.Response response = await apiService.postApi(
       'get_pending_rooms_by_building',
       data,
     );
-    // log('${response.data}');
+    log('${response.data}');
     pendingFloors.value =
         await [PendingRoomsByFloorModel.fromJson(response.data)].toList();
 
@@ -459,6 +467,8 @@ class AuditingController extends GetxController {
   setSelectedPendingFloor(String value) async {
     selectedFloor.value = value;
     selectedRoom.value = '';
+    auditAssets.value= [];
+
     final filteredData =
         pendingFloors.first.message!.pendingRoomsByFloor!
             .where((e) => e.floorName == value)
@@ -471,12 +481,59 @@ class AuditingController extends GetxController {
               .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
               .toList();
     }
+
+    final floorId =
+        pendingFloors.first.message?.pendingRoomsByFloor?.first.floorId ?? '';
+    if (floorId != '') {
+      selectedFloorId.value = floorId.toString();
+      log('----------------> floor id ${selectedFloorId}');
+    } else {
+      log('floor is fetching is error ');
+    }
   }
 
   setSelectedPendingRoom(String room) {
     log(room);
     if (room != null) {
       selectedRoom.value = room.trim();
+    }
+
+    final roomId = pendingRooms.where((e)=>e.roomName==room).first.roomId;
+    if (roomId != null) {
+      selectedRoomId.value = roomId.toString();
+      fetchAuditedAssets(
+        buildingId,
+        selectedFloorId.value,
+        selectedRoomId.value,
+      );
+      log('---------------------------> ${selectedRoomId}');
+    } else {
+      log('roomId fethcing is error');
+    }
+  }
+
+  fetchAuditedAssets(String buildingId, String floorId, String roomId) async {
+    isLoading.value = true;
+    final payload = {"building": buildingId, "floor": floorId, "room": roomId};
+    print('AuditedAssetsModel ${payload}');
+    try {
+      appDio.Response response = await apiService.postApi(
+        'get_api_audit_analysis_filter',
+        payload,
+      );
+
+      auditAssets.value =
+          await [AuditedAssetsModel.fromJson(response.data)].toList();
+
+      log('AuditedAssetsModel${jsonEncode(auditAssets.value)}');
+      // if (response.statusCode != null) {
+      // }
+    } catch (e) {
+      Get.snackbar('Error', 'Check your api$e');
+    } finally {
+       await Future.delayed(Duration(milliseconds: 200));
+       log("tested");
+      isLoading.value = false;
     }
   }
 }

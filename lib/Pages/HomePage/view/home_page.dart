@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends GetView<HomeController> {
   HomePage({super.key});
   final AuthController _authControler = Get.find<AuthController>();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +20,6 @@ class HomePage extends GetView<HomeController> {
         children: [
           Expanded(
             child: Container(
-              // padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
               child: SafeArea(
                 maintainBottomViewPadding: true,
@@ -64,7 +65,8 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ),
                                   Text(
-                                    _authControler.currentUser.value!.name.toString(),
+                                    _authControler.currentUser.value!.name
+                                        .toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13.sp,
@@ -84,7 +86,6 @@ class HomePage extends GetView<HomeController> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-
                     Expanded(
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 20),
@@ -120,62 +121,58 @@ class HomePage extends GetView<HomeController> {
                               ),
                             ),
                             SizedBox(height: 10.h),
-                            Obx(() {
-                              if (controller.auditList.value.isEmpty) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              return Expanded(
-                                child: RefreshIndicator(
+                            Expanded(
+                              child: Obx(() {
+                                return RefreshIndicator(
                                   onRefresh: () async {
-                                    controller.fetchAudit();
+                                     controller.fetchAudit();
                                   },
-                                  child: ListView.builder(
-                                    itemCount: controller.auditList.length,
-                                    itemBuilder: (
-                                      BuildContext context,
-                                      int index,
-                                    ) {
-                                      final audits =
-                                          controller.auditList[index];
-                                      return audits.building == null
-                                          ? Container()
-                                          : InkWell(
-                                            onTap: () => {},
-                                            child: InkWell(
-                                              onTap:
-                                                  () => {
-                                                    Get.offNamed(
-                                                      arguments: {
-                                                        'auditNumber':
-                                                            audits.auditNumber,
-                                                        'buildingId':
-                                                            audits.building,
-                                                        'buildingName':
-                                                            audits
-                                                                .building_name,
-                                                        'dueDate':
-                                                            audits.dueDate,
-                                                      },
-                                                      AppRoutes.auditingPage,
-                                                    ),
-                                                  },
-                                              child: BuildingListCard(
-                                                buildingName:
-                                                    audits.auditNumber,
-                                                auditType: audits.auditType,
-                                                auditId:
-                                                    audits.building_name
-                                                        .toString(),
-                                              ),
-                                            ),
+                                  child: Skeletonizer(
+                                    enabled: controller.isLoading.value,
+                                    enableSwitchAnimation: true,
+                                    child: ListView.builder(
+                                      // Show skeleton items while loading, actual items when loaded
+                                      itemCount: controller.isLoading.value 
+                                          ? 5 // Show 5 skeleton placeholders
+                                          : controller.auditList.length,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        // While loading, show skeleton version
+                                        if (controller.isLoading.value) {
+                                          return BuildingListCard(
+                                            buildingName: "Loading Audit Number",
+                                            auditType: "Loading Type",
+                                            auditId: "Loading Building Name",
                                           );
-                                    },
+                                        }
+                                        
+                                        // When loaded, show actual data
+                                        final audits = controller.auditList[index];
+                                        return audits.building == null
+                                            ? Container()
+                                            : InkWell(
+                                                onTap: () => {
+                                                  Get.offNamed(
+                                                    arguments: {
+                                                      'auditNumber': audits.auditNumber,
+                                                      'buildingId': audits.building,
+                                                      'buildingName': audits.building_name,
+                                                      'dueDate': audits.dueDate,
+                                                    },
+                                                    AppRoutes.auditingPage,
+                                                  ),
+                                                },
+                                                child: BuildingListCard(
+                                                  buildingName: audits.auditNumber,
+                                                  auditType: audits.auditType,
+                                                  auditId: audits.building_name.toString(),
+                                                ),
+                                              );
+                                      },
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              }),
+                            ),
                           ],
                         ),
                       ),
@@ -236,11 +233,11 @@ Widget _buildBottomNavItem(IconData icon, String label) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, color: Colors.white, size: 20.sp), // Scaled icon size
+      Icon(icon, color: Colors.white, size: 20.sp),
       Text(
         label,
         style: TextStyle(color: Colors.white, fontSize: 12.sp),
-      ), // Scaled font size
+      ),
     ],
   );
 }
