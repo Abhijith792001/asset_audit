@@ -543,7 +543,6 @@ class AuditingController extends GetxController {
   }
 
   getAllAssetsByRoom(String buildingId, String floorId, String roomId) async {
-    
     final payLoad = {
       "custom_building": buildingId,
       "custom_floor": floorId,
@@ -570,25 +569,26 @@ class AuditingController extends GetxController {
   }
 
   missAssetsFinder() async {
-    List missingAsset = [];
-        List audit_assetno =
-            auditAssets.first.message!.map((e) => e.asset).toList();
-        List room_assetno = roomAssets.first.message!.map((e) => e.name).toList();
-        for(var element  in room_assetno){
-          if(!audit_assetno.contains(element)){
-    print(element);
-   missingAsset.add(element);
+    List audit_assetno =
+        auditAssets.first.message!.map((e) => e.asset).toList();
+    List room_assetno =  roomAssets.first.message!.map((e) => e.name).toList();
+    // for (var element in room_assetno) {
+    //   if (!audit_assetno.contains(element)) {
+    //     print(element);
+    //     missingAsset.add(element);
+    //   }
+    // }
 
-          }
-        }
-        postMissingAsset(assetNumbers: missingAsset);
+    List missingAsset =
+        room_assetno.where((item) => !audit_assetno.contains((item))).toList();
+
+    postMissingAsset(assetNumbers: missingAsset);
 
     //     }
 
-        print('----------------audit-----------> $audit_assetno');
-        print('----------room------------>$room_assetno');
-        print('----------missing Asset------------>$missingAsset');
-
+    print('----------------audit-----------> $audit_assetno');
+    print('----------room------------>$room_assetno');
+    print('----------missing Asset------------>$missingAsset');
 
     log(
       'missing assets--------------------------------------------> ${missingAsset}',
@@ -596,61 +596,60 @@ class AuditingController extends GetxController {
 
     log('Need room${jsonEncode(roomAssets.value)}');
     log('Need value${jsonEncode(auditAssets.value)}');
-  
   }
 
 
 
+  Future<void> postMissingAsset({required List assetNumbers}) async {
+    try {
+      if (assetNumbers.isEmpty) {
+        Get.snackbar('No Missing Assets', 'Nothing to post');
+        return;
+      }
 
-Future<void> postMissingAsset({
-  required List assetNumbers,
-}) async {
-  try {
-    if (assetNumbers.isEmpty) {
-      Get.snackbar('No Missing Assets', 'Nothing to post');
-      return;
-    }
+      var payload = {
+        "message":
+            assetNumbers
+                .map(
+                  (e) => {
+                    'audit_number': auditNumber,
+                    'asset': e.toString(),
+                    'building': buildingId,
+                    'floor': selectedFloorId.value,
+                    'room': selectedRoomId.value,
+                    'audit_type': 'Issued Audit',
+                    'audit_status': 'Missing Asset',
+                    'asset_owner': "abhijithjr@am.amrita.edu",
+                    // 'store': "ICTS Store",
+                    // 'activity_by': 'abhijithjr.am.amrita.edu',
+                    'current_status': 'Pending',
+                  }, 
+                )
+                .toList(),
+      };
 
-    var payload = {
-      "message": assetNumbers.map((e) => {
-            'audit_number': auditNumber,
-            'asset': e.toString(),
-            'building': buildingId,
-            'floor': selectedFloorId.value,
-            'room': selectedRoomId.value,
-            'audit_type': 'Issued Audit',
-            'audit_status': 'Missing Asset',
-            'asset_owner': "", // Don't use assets.first if not correct
-            'store': "",
-            'activity_by': currentUserMail.value,
-            'current_status': 'Pending',
-          }).toList(),
-    };
+      print("Payload ------------------------> $payload");
 
-    print("Payload ------------------------> $payload");
-
-    final appDio.Response response = await apiService.postApi(
-      'create_audit_analysis_muliple',
-      payload,
-    );
-
-    if (response.statusCode == 200) {
-      Get.snackbar('Success', 'Missing Assets Posted');
-      fetchAuditedAssets(
-        buildingId,
-        selectedFloorId.value,
-        selectedRoomId.value,
+      final appDio.Response response = await apiService.postApi(
+        'create_audit_analysis_multiple',
+        payload,
       );
-      selectedUser.value = '';
-      print("Response: ${response.data}");
-    } else {
-      Get.snackbar('Error', 'Failed to post. Status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        Get.snackbar('Success', 'Missing Assets Posted');
+        // fetchAuditedAssets(
+        //   buildingId,
+        //   selectedFloorId.value,
+        //   selectedRoomId.value,
+        // );
+        selectedUser.value = '';
+        print("Response: ${response.data}");
+      } else {
+        Get.snackbar('Error', 'Failed to post. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+      print('Caught error: ${e.toString()}');
     }
-  } catch (e) {
-    Get.snackbar('Error', e.toString());
-    print('Caught error: ${e.toString()}');
   }
 }
-
-}
-

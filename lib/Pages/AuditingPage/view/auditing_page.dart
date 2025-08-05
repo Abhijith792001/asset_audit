@@ -22,9 +22,10 @@ class AuditingPage extends GetView<AuditingController> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => {
-        if (!didPop) {Get.offNamed(AppRoutes.homePage)},
-      },
+      onPopInvoked:
+          (didPop) => {
+            if (!didPop) {Get.offNamed(AppRoutes.homePage)},
+          },
       child: Scaffold(
         backgroundColor: AppTheme.whiteColor,
         floatingActionButton: FloatingActionButton.extended(
@@ -48,14 +49,54 @@ class AuditingPage extends GetView<AuditingController> {
             onTap: () => {Get.offAllNamed(AppRoutes.homePage)},
             child: Icon(LucideIcons.chevronLeft, color: AppTheme.whiteColor),
           ),
-          title: Text('Auditing', style: TextStyle(color: AppTheme.whiteColor)),
+          title: Obx(
+            () => Text(
+              controller.selectedRoom.value == ''
+                  ? 'Auditing'
+                  : controller.selectedRoom.value,
+              style: TextStyle(color: AppTheme.whiteColor, fontSize: 18),
+            ),
+          ),
           backgroundColor: AppTheme.primaryColor,
-          actions: [InkWell(
-            onTap: () {
-              controller.postMissingAsset(assetNumbers: []);
-              controller.getAllAssetsByRoom(buildingId, controller.selectedFloorId.value, controller.selectedRoomId.value);
-            },
-            child: BadgeBtn(title: 'Finish')), SizedBox(width: 10.w)],
+          actions: [
+            InkWell(
+              onTap: () {
+                // controller.postMissingAsset(assetNumbers: []);
+                Get.dialog(
+                  AlertDialog(
+                    backgroundColor: Colors.white,
+                    title: Text('Are You sure'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.getAllAssetsByRoom(
+                            buildingId,
+                            controller.selectedFloorId.value,
+                            controller.selectedRoomId.value,
+                          );
+                        },
+                        child: Text(
+                          'Confirm',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: BadgeBtn(title: 'Finish'),
+            ),
+            SizedBox(width: 10.w),
+          ],
         ),
         body: SafeArea(
           maintainBottomViewPadding: true,
@@ -82,9 +123,10 @@ class AuditingPage extends GetView<AuditingController> {
                       () => Flexible(
                         child: CustomDropdown(
                           hint: 'Select Floor',
-                          selectedValue: controller.pendingFloors.value.length == 0
-                              ? null
-                              : controller
+                          selectedValue:
+                              controller.pendingFloors.value.length == 0
+                                  ? null
+                                  : controller
                                       .pendingFloors
                                       .value
                                       .first
@@ -94,17 +136,22 @@ class AuditingPage extends GetView<AuditingController> {
                                       .contains(controller.selectedFloor.value)
                                   ? controller.selectedFloor.value
                                   : null,
-                          items: controller.pendingFloors.value.length == 0
-                              ? []
-                              : controller
-                                  .pendingFloors
-                                  .value
-                                  .first
-                                  .message!
-                                  .pendingRoomsByFloor!
-                                  .map((floor) => floor.floorName.toString())
-                                  .toList(),
-                          onChanged: (value) => controller.setSelectedPendingFloor(value),
+                          items:
+                              controller.pendingFloors.value.length == 0
+                                  ? []
+                                  : controller
+                                      .pendingFloors
+                                      .value
+                                      .first
+                                      .message!
+                                      .pendingRoomsByFloor!
+                                      .map(
+                                        (floor) => floor.floorName.toString(),
+                                      )
+                                      .toList(),
+                          onChanged:
+                              (value) =>
+                                  controller.setSelectedPendingFloor(value),
                         ),
                       ),
                     ),
@@ -117,15 +164,18 @@ class AuditingPage extends GetView<AuditingController> {
                   padding: EdgeInsets.only(left: 16.w, right: 16.w),
                   child: CustomDropdown(
                     hint: 'Select Room',
-                    selectedValue: controller.selectedRoom.value == null
-                        ? ''
-                        : controller.selectedRoom.value.trim(),
-                    items: controller.pendingRooms.length == 0
-                        ? []
-                        : controller.pendingRooms
-                            .map((room) => room.roomName.toString().trim())
-                            .toList(),
-                    onChanged: (value) => controller.setSelectedPendingRoom(value),
+                    selectedValue:
+                        controller.selectedRoom.value == null
+                            ? ''
+                            : controller.selectedRoom.value.trim(),
+                    items:
+                        controller.pendingRooms.length == 0
+                            ? []
+                            : controller.pendingRooms
+                                .map((room) => room.roomName.toString().trim())
+                                .toList(),
+                    onChanged:
+                        (value) => controller.setSelectedPendingRoom(value),
                   ),
                 ),
               ),
@@ -155,61 +205,63 @@ class AuditingPage extends GetView<AuditingController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
-                      onTap: () => {
-                        Get.dialog(
-                          AlertDialog(
-                            backgroundColor: AppTheme.whiteColor,
-                            actions: [
-                              Column(
-                                children: [
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    'Enter Asset Number',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  TextField(controller: _assetNumber),
-                                  SizedBox(height: 10.h),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      onTap:
+                          () => {
+                            Get.dialog(
+                              AlertDialog(
+                                backgroundColor: AppTheme.whiteColor,
+                                actions: [
+                                  Column(
                                     children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Get.back();
-                                        },
-                                        child: Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      SizedBox(height: 10.h),
+                                      Text(
+                                        'Enter Asset Number',
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          await controller.getAsset(
-                                            _assetNumber.text.trim(),
-                                          );
-                                          Get.toNamed(
-                                            AppRoutes.assetViewPage,
-                                          );
-                                        },
-                                        child: Text(
-                                          'Search Asset',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
+                                      TextField(controller: _assetNumber),
+                                      SizedBox(height: 10.h),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              await controller.getAsset(
+                                                _assetNumber.text.trim(),
+                                              );
+                                              Get.toNamed(
+                                                AppRoutes.assetViewPage,
+                                              );
+                                            },
+                                            child: Text(
+                                              'Search Asset',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      },
+                            ),
+                          },
                       child: BadgeBtn(title: 'Search Manual'),
                     ),
                     InkWell(
@@ -253,10 +305,17 @@ class AuditingPage extends GetView<AuditingController> {
                       },
                       child: ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        itemCount: controller.isLoading.value
-                            ? 5 // Show 5 skeleton items while loading
-                            : controller.auditAssets.value.length == 0 ||
-                                    controller.auditAssets.value.first.message!.length == 0
+                        itemCount:
+                            controller.isLoading.value
+                                ? 5 // Show 5 skeleton items while loading
+                                : controller.auditAssets.value.length == 0 ||
+                                    controller
+                                            .auditAssets
+                                            .value
+                                            .first
+                                            .message!
+                                            .length ==
+                                        0
                                 ? 1 // Show 1 item for "No assets" message
                                 : controller.auditAssets.first.message!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -274,7 +333,13 @@ class AuditingPage extends GetView<AuditingController> {
                           }
 
                           if (controller.auditAssets.value.length == 0 ||
-                              controller.auditAssets.value.first.message!.length == 0) {
+                              controller
+                                      .auditAssets
+                                      .value
+                                      .first
+                                      .message!
+                                      .length ==
+                                  0) {
                             // Show "No assets" message when not loading and no data
                             return Center(
                               child: Padding(
@@ -291,7 +356,8 @@ class AuditingPage extends GetView<AuditingController> {
                           }
 
                           // Show actual asset data
-                          final assets = controller.auditAssets.first.message![index];
+                          final assets =
+                              controller.auditAssets.first.message![index];
                           return Column(
                             children: [
                               SizedBox(height: 5.h),
@@ -318,7 +384,7 @@ class AuditingPage extends GetView<AuditingController> {
 class BadgeBtn extends StatelessWidget {
   const BadgeBtn({super.key, required this.title});
   final String title;
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
