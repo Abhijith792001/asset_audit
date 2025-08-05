@@ -58,45 +58,47 @@ class AuditingPage extends GetView<AuditingController> {
             ),
           ),
           backgroundColor: AppTheme.primaryColor,
-          actions: [
-            InkWell(
-              onTap: () {
-                // controller.postMissingAsset(assetNumbers: []);
-                Get.dialog(
-                  AlertDialog(
-                    backgroundColor: Colors.white,
-                    title: Text('Are You sure'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          controller.getAllAssetsByRoom(
-                            buildingId,
-                            controller.selectedFloorId.value,
-                            controller.selectedRoomId.value,
-                          );
-                        },
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: BadgeBtn(title: 'Finish'),
-            ),
-            SizedBox(width: 10.w),
-          ],
+          // actions: [
+          //   InkWell(
+          //     onTap: () {
+          //       // controller.postMissingAsset(assetNumbers: []);
+          //       Get.dialog(
+          //         AlertDialog(
+          //           backgroundColor: Colors.white,
+          //           title: Text('Are You sure'),
+          //           actions: [
+          //             TextButton(
+          //               onPressed: () {
+          //                 Get.back();
+          //               },
+          //               child: Text(
+          //                 'Cancel',
+          //                 style: TextStyle(fontWeight: FontWeight.w600),
+          //               ),
+          //             ),
+          //             ElevatedButton(
+          //               onPressed: () {
+          //                 controller.getAllAssetsByRoom(
+          //                   buildingId,
+          //                   controller.selectedFloorId.value,
+          //                   controller.selectedRoomId.value,
+          //                 );
+          //                 // controller.roomStatusUpdate();
+          //                 Get.back();
+          //               },
+          //               child: Text(
+          //                 'Confirm',
+          //                 style: TextStyle(fontWeight: FontWeight.w600),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       );
+          //     },
+          //     child: BadgeBtn(title: 'Finish'),
+          //   ),
+          //   SizedBox(width: 10.w),
+          // ],
         ),
         body: SafeArea(
           maintainBottomViewPadding: true,
@@ -265,8 +267,71 @@ class AuditingPage extends GetView<AuditingController> {
                       child: BadgeBtn(title: 'Search Manual'),
                     ),
                     InkWell(
-                      onTap: () => {controller.clearAudit()},
-                      child: BadgeBtn(title: 'Clear History'),
+                      onTap: () {
+                        {
+                          // controller.postMissingAsset(assetNumbers: []);
+                          Get.dialog(
+                            AlertDialog(
+                              backgroundColor: Colors.white,
+                              title: Text('Are You sure'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    controller.getAllAssetsByRoom(
+                                      buildingId,
+                                      controller.selectedFloorId.value,
+                                      controller.selectedRoomId.value,
+                                    );
+                                    // controller.roomStatusUpdate();
+                                    Get.back();
+                                  },
+                                  child: Text(
+                                    'Confirm',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 5.h,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.btnPrimaryGradient,
+                          borderRadius: BorderRadius.all(Radius.circular(8.w)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(LucideIcons.circleCheck,size: 20,color: Colors.white,),
+                            SizedBox(width: 4.h,),
+                            Text(
+                              'Finish Audit',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.whiteColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -299,15 +364,12 @@ class AuditingPage extends GetView<AuditingController> {
                     enabled: controller.isLoading.value,
                     enableSwitchAnimation: true,
                     child: RefreshIndicator(
-                      onRefresh: () async {
-                        // Add refresh functionality if needed
-                        //  controller.fetchAuditedAssets(buildingId, floorId, roomId);
-                      },
+                      onRefresh: () async {},
                       child: ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         itemCount:
                             controller.isLoading.value
-                                ? 5 // Show 5 skeleton items while loading
+                                ? 5
                                 : controller.auditAssets.value.length == 0 ||
                                     controller
                                             .auditAssets
@@ -316,12 +378,12 @@ class AuditingPage extends GetView<AuditingController> {
                                             .message!
                                             .length ==
                                         0
-                                ? 1 // Show 1 item for "No assets" message
+                                ? 1
                                 : controller.auditAssets.first.message!.length,
                         itemBuilder: (BuildContext context, int index) {
                           if (controller.isLoading.value) {
-                            // Return skeleton version of AssetCard
                             return Column(
+                              key: ValueKey('skeleton_$index'),
                               children: [
                                 SizedBox(height: 5.h),
                                 AssetCard(
@@ -340,8 +402,8 @@ class AuditingPage extends GetView<AuditingController> {
                                       .message!
                                       .length ==
                                   0) {
-                            // Show "No assets" message when not loading and no data
                             return Center(
+                              key: ValueKey('empty_state'),
                               child: Padding(
                                 padding: EdgeInsets.only(top: 50.h),
                                 child: Text(
@@ -355,15 +417,16 @@ class AuditingPage extends GetView<AuditingController> {
                             );
                           }
 
-                          // Show actual asset data
-                          final assets =
+                          final asset =
                               controller.auditAssets.first.message![index];
                           return Column(
+                            key: ValueKey(asset.asset),
                             children: [
                               SizedBox(height: 5.h),
                               AssetCard(
-                                assetName: assets.asset.toString(),
-                                status: assets.auditStatus.toString(),
+                                key: ValueKey('${asset.asset}_card'),
+                                assetName: asset.asset.toString(),
+                                status: asset.auditStatus.toString(),
                               ),
                             ],
                           );

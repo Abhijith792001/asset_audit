@@ -258,49 +258,49 @@ class AuditingController extends GetxController {
     }
   }
 
-  addScannedAssets() async {
-    if (assets.value.isEmpty) return;
+  // addScannedAssets() async {
+  //   if (assets.value.isEmpty) return;
 
-    final value = assets.value.first;
-    final scanned = ScannedModel(
-      assetNo: value.assetNo.toString(),
-      owner: value.owner.toString(),
-      modifiedBy: value.owner.toString(),
-      assetStatus: value.assetStatus.toString(),
-      date: '17/07/2025',
-    );
+  //   final value = assets.value.first;
+  //   final scanned = ScannedModel(
+  //     assetNo: value.assetNo.toString(),
+  //     owner: value.owner.toString(),
+  //     modifiedBy: value.owner.toString(),
+  //     assetStatus: value.assetStatus.toString(),
+  //     date: '17/07/2025',
+  //   );
 
-    scannedAssets.value = [scanned];
+  //   scannedAssets.value = [scanned];
 
-    Get.snackbar('Success', 'Added Successfully');
-    // selectedUser.value = '';
+  //   Get.snackbar('Success', 'Added Successfully');
+  //   // selectedUser.value = '';
 
-    print(jsonEncode(scannedAssets.value.first));
-    var existing = await appStorage.read("scannedAssets");
-    print(jsonEncode(existing));
+  //   print(jsonEncode(scannedAssets.value.first));
+  //   var existing = await appStorage.read("scannedAssets");
+  //   print(jsonEncode(existing));
 
-    if (existing == null) {
-      print("josn ${jsonEncode([scanned])}");
-      appStorage.write("scannedAssets", jsonEncode([scanned.toJson()]));
-      final valueResultt = await appStorage.read('scannedAssets');
-      print('read ${valueResultt}');
-    } else {
-      List<dynamic> decoded = jsonDecode(existing);
-      decoded.add(scanned.toJson());
-      appStorage.write("scannedAssets", jsonEncode(decoded));
-      final valueResultt = await appStorage.read('scannedAssets');
-      print('read ${valueResultt}');
-    }
-    getRecentAssets();
-    Get.offNamed(
-      AppRoutes.auditingPage,
-      arguments: {
-        'buildingId': buildingId,
-        'buildingName': buildingName,
-        'dueDate': dueDate,
-      },
-    );
-  }
+  //   if (existing == null) {
+  //     print("josn ${jsonEncode([scanned])}");
+  //     appStorage.write("scannedAssets", jsonEncode([scanned.toJson()]));
+  //     final valueResultt = await appStorage.read('scannedAssets');
+  //     print('read ${valueResultt}');
+  //   } else {
+  //     List<dynamic> decoded = jsonDecode(existing);
+  //     decoded.add(scanned.toJson());
+  //     appStorage.write("scannedAssets", jsonEncode(decoded));
+  //     final valueResultt = await appStorage.read('scannedAssets');
+  //     print('read ${valueResultt}');
+  //   }
+  //   getRecentAssets();
+  //   Get.offNamed(
+  //     AppRoutes.auditingPage,
+  //     arguments: {
+  //       'buildingId': buildingId,
+  //       'buildingName': buildingName,
+  //       'dueDate': dueDate,
+  //     },
+  //   );
+  // }
 
   getUser() async {
     try {
@@ -369,6 +369,14 @@ class AuditingController extends GetxController {
         selectedUser.value = '';
         print(response);
         print(currentAssetStatus.value);
+        Get.offNamed(
+          AppRoutes.auditingPage,
+          arguments: {
+            'buildingId': buildingId,
+            'buildingName': buildingName,
+            'dueDate': dueDate,
+          },
+        );
       } else {
         Get.snackbar('Error', 'Check your code');
       }
@@ -571,7 +579,7 @@ class AuditingController extends GetxController {
   missAssetsFinder() async {
     List audit_assetno =
         auditAssets.first.message!.map((e) => e.asset).toList();
-    List room_assetno =  roomAssets.first.message!.map((e) => e.name).toList();
+    List room_assetno = roomAssets.first.message!.map((e) => e.name).toList();
     // for (var element in room_assetno) {
     //   if (!audit_assetno.contains(element)) {
     //     print(element);
@@ -598,12 +606,15 @@ class AuditingController extends GetxController {
     log('Need value${jsonEncode(auditAssets.value)}');
   }
 
-
-
   Future<void> postMissingAsset({required List assetNumbers}) async {
     try {
       if (assetNumbers.isEmpty) {
-        Get.snackbar('No Missing Assets', 'Nothing to post');
+        Get.snackbar(
+          'No Missing Assets',
+          'Nothing to post',
+          backgroundColor: AppTheme.dangerColor,
+          colorText: AppTheme.whiteColor,
+        );
         return;
       }
 
@@ -623,7 +634,7 @@ class AuditingController extends GetxController {
                     // 'store': "ICTS Store",
                     // 'activity_by': 'abhijithjr.am.amrita.edu',
                     'current_status': 'Pending',
-                  }, 
+                  },
                 )
                 .toList(),
       };
@@ -650,6 +661,40 @@ class AuditingController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', e.toString());
       print('Caught error: ${e.toString()}');
+    } finally {
+      roomStatusUpdate();
+      clearDropDown();
     }
+  }
+
+  roomStatusUpdate() async {
+    final payload = {
+      "audit_number": auditNumber,
+      "building": buildingId,
+      "rooms_to_update": [selectedRoomId.value],
+    };
+    print('rooms status payload $payload');
+    try {
+      isLoading.value = true;
+      appDio.Response response = await apiService.postApi(
+        'update_audit_status',
+        payload,
+      );
+
+      if (response != null) {
+        print('Room status updated $response');
+      } else {
+        print('cheack you api');
+      }
+    } catch (e) {
+      Get.snackbar('error', '${e.toString()}');
+    }
+  }
+
+  clearDropDown() {
+    selectedFloor.value = '';
+    selectedRoom.value = '';
+    pendingRooms.value = [];
+    fetchRoom(buildingId);
   }
 }

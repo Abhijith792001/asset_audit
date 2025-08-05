@@ -330,7 +330,7 @@ class AssetViewPage extends StatelessWidget {
                         onTap: () {
                           if (controller.selectedUser.value != "") {
                             controller.setCurrentAssetStatus();
-                            controller.addScannedAssets();
+                            // controller.addScannedAssets();
                             controller.updateAssetStatus(
                               auditNumber: controller.auditNumber,
                               assetNumber: assetList.assetNo.toString(),
