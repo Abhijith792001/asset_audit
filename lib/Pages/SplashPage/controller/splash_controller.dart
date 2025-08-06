@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 class SplashController extends GetxController {
   final StorageManager _storage = StorageManager();
-  final String _userKey = 'user';
+  final String _userMail = 'user';
 
   @override
   void onInit() {
@@ -20,7 +20,7 @@ class SplashController extends GetxController {
       FlutterNativeSplash.remove();
       await Future.delayed(const Duration(seconds: 2));
 
-      final userData = await _storage.read(_userKey);
+      final userData = await _storage.read('mail');
 
       if (userData != null) {
         final userJson = jsonDecode(userData);

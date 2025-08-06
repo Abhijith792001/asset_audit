@@ -12,8 +12,8 @@ class RegistrationPage extends StatelessWidget {
 
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _mPinController = TextEditingController();
-  final _remPinController = TextEditingController();
+  // final _mPinController = TextEditingController();
+  // final _remPinController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,28 +45,13 @@ class RegistrationPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Create Account",
+                "Login Account",
                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
               ),
-              Text(
-                'Enter your details below',
-                style: TextStyle(fontSize: 12.sp),
-              ),
-              SizedBox(height: 20.h),
-              Container(
-                padding: EdgeInsets.only(left: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.sp)),
-                  border: Border.all(color: Colors.black45),
-                ),
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Your Name',
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
+              // Text(
+              //   'Enter your details below',
+              //   style: TextStyle(fontSize: 12.sp),
+              // ),
               SizedBox(height: 20.h),
               Container(
                 padding: EdgeInsets.only(left: 20.w),
@@ -82,65 +67,21 @@ class RegistrationPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
-              Container(
-                padding: EdgeInsets.only(left: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.sp)),
-                  border: Border.all(color: Colors.black45),
-                ),
-                child: TextField(
-                  controller: _mPinController,
-                  keyboardType: TextInputType.number,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Your Secret MPIN',
-                    border: InputBorder.none,
-                  ),
+              SizedBox(height: 5.h),
+              Obx(
+                () => Text(
+                  controller.errorMessage.value,
+                  style: TextStyle(color: AppTheme.dangerColor),
                 ),
               ),
-              SizedBox(height: 20.h),
-              Container(
-                padding: EdgeInsets.only(left: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.sp)),
-                  border: Border.all(color: Colors.black45),
-                ),
-                child: TextField(
-                  controller: _remPinController,
-                  keyboardType: TextInputType.number,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Re Enter MPIN',
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 10.h),
               InkWell(
                 onTap: () {
-                  final mpin = _mPinController.text.trim();
-                  final rempin = _remPinController.text.trim();
-
-                  if (mpin.length != 6 || rempin.length != 6) {
-                    Get.snackbar(
-                      "Invalid MPIN",
-                      "MPIN must be exactly 6 digits",
-                    );
-                  } else if (mpin != rempin) {
-                    Get.snackbar(
-                      "Mismatched",
-                      "Check and confirm your MPIN again.",
-                    );
-                  } else {
-                    controller.registerUser(
-                      _nameController.text.trim(),
-                      _emailController.text.trim(),
-                      mpin,
-                    );
-                  }
+                  controller.accountChecking(
+                    _emailController.text.trim().toString(),
+                  );
+                  // controller.takeDeviceInfo();
                 },
-
                 child: Container(
                   alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(
@@ -153,7 +94,7 @@ class RegistrationPage extends StatelessWidget {
                     gradient: AppTheme.primaryGradient,
                   ),
                   child: Text(
-                    'Create',
+                    'Sign in',
                     style: TextStyle(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,

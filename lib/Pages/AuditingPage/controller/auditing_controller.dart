@@ -5,8 +5,6 @@ import 'package:asset_audit/Pages/AuditingPage/model/audit_assets_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/pending_rooms_by_floor.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:dio/dio.dart' as appDio;
-import 'package:asset_audit/Pages/AuditingPage/model/floor_model.dart';
-import 'package:asset_audit/Pages/AuditingPage/model/room_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/scanned_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/asset_model.dart';
 import 'package:asset_audit/Pages/AuditingPage/model/user_model.dart';

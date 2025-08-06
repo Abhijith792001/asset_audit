@@ -22,11 +22,12 @@ class HomePage extends GetView<HomeController> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(  _authControler.currentUser.value!.name
-                                        .toString(),),
-              accountEmail: Text(controller.userMail.value),
+              accountName: Text(
+                _authControler.userName.value,
+              ),
+              accountEmail: Text(_authControler.userMail.value),
               currentAccountPicture: CircleAvatar(
-                // backgroundImage: AssetImage(''),
+                child: Icon(LucideIcons.user, size: 35.sp),
               ),
               decoration: BoxDecoration(color: AppTheme.primaryColor),
             ),
@@ -50,7 +51,6 @@ class HomePage extends GetView<HomeController> {
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () {
-                Navigator.pop(context);
                 _authControler.logout(); // optional: logout logic
               },
             ),
@@ -112,7 +112,7 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ),
                                   Text(
-                                    _authControler.currentUser.value!.name
+                                    _authControler.userName.value
                                         .toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -241,10 +241,13 @@ class HomePage extends GetView<HomeController> {
                                                   },
                                               child: BuildingListCard(
                                                 buildingName:
-                                                    audits.auditNumber ?? '',
+                                                    '${audits.auditNumber}' ??
+                                                    '',
                                                 auditType:
                                                     audits.auditType ?? '',
-                                                auditId: audits.auditType ?? '',
+                                                auditId:
+                                                    'End Date : ${audits.dueDate}' ??
+                                                    '',
                                               ),
                                             );
                                       },

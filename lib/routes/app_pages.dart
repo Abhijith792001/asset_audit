@@ -2,6 +2,8 @@ import 'package:asset_audit/Authentication/binding/auth_binding.dart';
 import 'package:asset_audit/Authentication/view/login_page.dart';
 import 'package:asset_audit/Authentication/view/modern_login_page.dart';
 import 'package:asset_audit/Authentication/view/registration_page.dart';
+import 'package:asset_audit/Pages/ErrorPages/binding/error_binding.dart';
+import 'package:asset_audit/Pages/errorPages/view/error_page.dart';
 import 'package:get/get.dart';
 import 'package:asset_audit/Pages/SplashPage/binding/splash_binding.dart';
 import 'package:asset_audit/Pages/SplashPage/view/splash_page.dart';
@@ -51,6 +53,12 @@ class AppPages {
       name: AppRoutes.modernLoginPage,
       page: () => ModernLoginPage(),
       binding: AuthBinding()
+    ),
+    GetPage(
+      name: AppRoutes.errorPage,
+      page: () => Errorpage(),
+      binding: ErrorBinding()
+
     ),
    
   ];
