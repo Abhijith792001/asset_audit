@@ -80,6 +80,6 @@ class AuthController extends GetxController {
     await appStorage.delete(_userKey);
     currentUser.value = null;
     Get.snackbar('Logged Out', 'User session cleared');
-    Get.offAllNamed(AppRoutes.loginPage);
+    Get.offAllNamed(AppRoutes.registrationPage);
   }
 }

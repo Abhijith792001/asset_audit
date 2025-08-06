@@ -46,6 +46,7 @@ dependencies:
   flutter_svg: ^2.2.0
   encrypt: ^5.0.1
   skeletonizer: 1.4.3
+  device_info_plus: ^11.5.0
 
 
 

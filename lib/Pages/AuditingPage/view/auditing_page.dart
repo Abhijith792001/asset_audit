@@ -319,8 +319,12 @@ class AuditingPage extends GetView<AuditingController> {
                         ),
                         child: Row(
                           children: [
-                            Icon(LucideIcons.circleCheck,size: 20,color: Colors.white,),
-                            SizedBox(width: 4.h,),
+                            Icon(
+                              LucideIcons.circleCheck,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 4.h),
                             Text(
                               'Finish Audit',
                               style: TextStyle(

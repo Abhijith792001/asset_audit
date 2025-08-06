@@ -1,5 +1,6 @@
 import 'package:asset_audit/Authentication/controller/auth_controller.dart';
 import 'package:asset_audit/Pages/HomePage/controller/home_controller.dart';
+import 'package:asset_audit/Pages/HomePage/model/audit_model.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:asset_audit/widgets/building_list_card.dart';
@@ -10,12 +11,53 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends GetView<HomeController> {
-  HomePage({super.key});
   final AuthController _authControler = Get.find<AuthController>();
-  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(  _authControler.currentUser.value!.name
+                                        .toString(),),
+              accountEmail: Text(controller.userMail.value),
+              currentAccountPicture: CircleAvatar(
+                // backgroundImage: AssetImage(''),
+              ),
+              decoration: BoxDecoration(color: AppTheme.primaryColor),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profile'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () => Navigator.pop(context),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                _authControler.logout(); // optional: logout logic
+              },
+            ),
+          ],
+        ),
+      ),
+
       body: Column(
         children: [
           Expanded(
@@ -36,12 +78,17 @@ class HomePage extends GetView<HomeController> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(
-                                    LucideIcons.alignLeft,
-                                    color: Colors.white,
+                                  InkWell(
+                                    onTap: () {
+                                      _scaffoldKey.currentState!.openDrawer();
+                                    },
+                                    child: Icon(
+                                      LucideIcons.alignLeft,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                   SizedBox(width: 10.w),
-                                  CircleAvatar(child: Text('AJ')),
+                                  // CircleAvatar(child: Text('AJ')),
                                 ],
                               ),
                               Image.asset(
@@ -122,56 +169,89 @@ class HomePage extends GetView<HomeController> {
                             ),
                             SizedBox(height: 10.h),
                             Expanded(
-                              child: Obx(() {
-                                return RefreshIndicator(
-                                  onRefresh: () async {
-                                     controller.fetchAudit();
-                                  },
-                                  child: Skeletonizer(
-                                    enabled: controller.isLoading.value,
-                                    enableSwitchAnimation: true,
-                                    child: ListView.builder(
-                                      // Show skeleton items while loading, actual items when loaded
-                                      itemCount: controller.isLoading.value 
-                                          ? 5 // Show 5 skeleton placeholders
-                                          : controller.auditList.length,
-                                      itemBuilder: (BuildContext context, int index) {
-                                        // While loading, show skeleton version
-                                        if (controller.isLoading.value) {
+                              child: RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchAudit();
+                                },
+                                child: Obx(() {
+                                  if (controller.isLoading.value) {
+                                    // While loading – show skeletons
+                                    return Skeletonizer(
+                                      enabled: true,
+                                      child: ListView.builder(
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        itemCount: 5,
+                                        itemBuilder: (context, index) {
                                           return BuildingListCard(
-                                            buildingName: "Loading Audit Number",
-                                            auditType: "Loading Type",
-                                            auditId: "Loading Building Name",
+                                            buildingName: "Loading...",
+                                            auditType: "Loading...",
+                                            auditId: "Loading...",
                                           );
-                                        }
-                                        
-                                        // When loaded, show actual data
-                                        final audits = controller.auditList[index];
-                                        return audits.building == null
-                                            ? Container()
+                                        },
+                                      ),
+                                    );
+                                  } else if (controller.auditList.isEmpty) {
+                                    // No audits – show message with scrollable physics
+                                    return ListView(
+                                      physics: AlwaysScrollableScrollPhysics(),
+                                      children: [
+                                        SizedBox(height: 100.h),
+                                        Center(
+                                          child: Text(
+                                            textAlign: TextAlign.center,
+                                            'No audits assigned to you at the moment. \nPlease check back later.',
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  } else {
+                                    // Show actual data
+                                    return ListView.builder(
+                                      physics: AlwaysScrollableScrollPhysics(),
+                                      itemCount: controller.auditList.length,
+                                      itemBuilder: (
+                                        BuildContext context,
+                                        int index,
+                                      ) {
+                                        final Message? audits =
+                                            controller.auditList[index];
+                                        return audits == null
+                                            ? SizedBox.shrink()
                                             : InkWell(
-                                                onTap: () => {
-                                                  Get.offNamed(
-                                                    arguments: {
-                                                      'auditNumber': audits.auditNumber,
-                                                      'buildingId': audits.building,
-                                                      'buildingName': audits.building_name,
-                                                      'dueDate': audits.dueDate,
-                                                    },
-                                                    AppRoutes.auditingPage,
-                                                  ),
-                                                },
-                                                child: BuildingListCard(
-                                                  buildingName: audits.auditNumber,
-                                                  auditType: audits.auditType,
-                                                  auditId: audits.building_name.toString(),
-                                                ),
-                                              );
+                                              onTap:
+                                                  () => {
+                                                    Get.offNamed(
+                                                      AppRoutes.auditingPage,
+                                                      arguments: {
+                                                        'auditNumber':
+                                                            audits.auditNumber,
+                                                        'buildingId':
+                                                            audits.building,
+                                                        'buildingName':
+                                                            audits.buildingName,
+                                                        'dueDate':
+                                                            audits.dueDate,
+                                                      },
+                                                    ),
+                                                  },
+                                              child: BuildingListCard(
+                                                buildingName:
+                                                    audits.auditNumber ?? '',
+                                                auditType:
+                                                    audits.auditType ?? '',
+                                                auditId: audits.auditType ?? '',
+                                              ),
+                                            );
                                       },
-                                    ),
-                                  ),
-                                );
-                              }),
+                                    );
+                                  }
+                                }),
+                              ),
                             ),
                           ],
                         ),
@@ -234,10 +314,7 @@ Widget _buildBottomNavItem(IconData icon, String label) {
     mainAxisSize: MainAxisSize.min,
     children: [
       Icon(icon, color: Colors.white, size: 20.sp),
-      Text(
-        label,
-        style: TextStyle(color: Colors.white, fontSize: 12.sp),
-      ),
+      Text(label, style: TextStyle(color: Colors.white, fontSize: 12.sp)),
     ],
   );
 }

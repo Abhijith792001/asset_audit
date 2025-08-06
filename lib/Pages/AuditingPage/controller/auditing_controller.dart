@@ -697,4 +697,6 @@ class AuditingController extends GetxController {
     pendingRooms.value = [];
     fetchRoom(buildingId);
   }
+
+  
 }
