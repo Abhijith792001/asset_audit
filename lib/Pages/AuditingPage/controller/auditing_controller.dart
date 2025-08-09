@@ -45,6 +45,8 @@ class AuditingController extends GetxController {
   RxString currentUserMail = ''.obs;
   RxString statusValueOfAsset = ''.obs;
   RxString statusAsset = ''.obs;
+  RxString userName = ''.obs;
+  RxString userMail = ''.obs;
 
   RxString selectedUser = ''.obs;
 
@@ -54,9 +56,11 @@ class AuditingController extends GetxController {
   late final String auditNumber;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-
+    userName.value = await appStorage.read('name');
+    userMail.value = await appStorage.read('mail');
+    print("${userMail.value}----->");
     buildingId = Get.arguments?['buildingId'] ?? '';
     buildingName = Get.arguments?['buildingName'] ?? '';
     dueDate = Get.arguments?['dueDate'] ?? '';
@@ -349,7 +353,7 @@ class AuditingController extends GetxController {
         'audit_status': assetStatus,
         'asset_owner': assetOwner,
         'store': storeName,
-        'activity_by': currentUserMail.value,
+        'activity_by': userMail.value,
         'current_status': statusAsset.value,
       };
 
@@ -630,7 +634,7 @@ class AuditingController extends GetxController {
                     'audit_status': 'Missing Asset',
                     'asset_owner': "abhijithjr@am.amrita.edu",
                     // 'store': "ICTS Store",
-                    // 'activity_by': 'abhijithjr.am.amrita.edu',
+                    'activity_by': userMail.value,
                     'current_status': 'Pending',
                   },
                 )
@@ -695,6 +699,4 @@ class AuditingController extends GetxController {
     pendingRooms.value = [];
     fetchRoom(buildingId);
   }
-
-  
 }

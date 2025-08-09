@@ -15,48 +15,46 @@ class HomeController extends GetxController {
   RxList<Message> auditList = <Message>[].obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     // TODO: implement onInit
     super.onInit();
+    userMail.value = await appStorage.read('mail') ?? '';
+    print('Home controller ${userMail.value}');
     fetchAudit();
   }
 
-   fetchAudit() async {
-  isLoading.value = true;
+  fetchAudit() async {
+    isLoading.value = true;
 
-  try {
-    final response = await apiService.getApi('get_api_audit_filter');
+    try {
+      final response = await apiService.getApi('get_api_audit_filter');
 
-    if (response != null && response['message'] != null) {
-      // Parse response to Message list
-      List<Message> audits = (response['message'] as List)
-          .map((json) => Message.fromJson(json))
-          .toList();
+      if (response != null && response['message'] != null) {
+        // Parse response to Message list
+        List<Message> audits =
+            (response['message'] as List)
+                .map((json) => Message.fromJson(json))
+                .toList();
 
-      // Get logged-in user mail
-      userMail.value = await appStorage.read('userMail') ?? '';
-      print('Logged in user: ${userMail.value}');
-
-      // Filter audits based on assignedTo
-      auditList.value = audits.where((element) {
-        return element.assignedTo != null &&
-            element.assignedTo!.contains(userMail.value);
-      }).toList();
-
-      print('Filtered audit list: ${jsonEncode(auditList.value)}');
-    } else {
-      print('Failed to load audits or no data found.');
+        // Get logged-in user mail
+        print('Logged in user: ${userMail.value}');
+        auditList.value =
+            audits.where((element) {
+              return element.assignedTo != null &&
+                  element.assignedTo!.contains(userMail.value);
+            }).toList();
+        print('Filtered audit list: ${jsonEncode(auditList.value)}');
+      } else {
+        print('Failed to load audits or no data found.');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'API error: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
     }
-  } catch (e) {
-    Get.snackbar('Error', 'API error: ${e.toString()}');
-  } finally {
-    isLoading.value = false;
   }
-}
-
 
   void getBuilding(String id) async {
     final response = await apiService.getApi('get_lm_building');
   }
-
 }

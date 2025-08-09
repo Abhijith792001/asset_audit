@@ -9,6 +9,15 @@ import 'package:asset_audit/utils/storage_manager.dart';
 import 'package:asset_audit/Authentication/model/user_model.dart';
 
 class AuthController extends GetxController {
+  @override
+  void onInit() async {
+    // TODO: implement onInit
+    super.onInit();
+    userName.value = await appStorage.read('name');
+    userMail.value = await appStorage.read('mail');
+    print('${userMail.value} and ${userName.value}');
+  }
+
   final StorageManager appStorage = StorageManager();
   final ApiService apiService = ApiService();
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -96,6 +105,8 @@ class AuthController extends GetxController {
         payload,
       );
 
+      print('------------>${response}');
+      print('${payload}');
       if (response.data['message']['status'] == 'success') {
         Get.snackbar('Login Successful', 'Welcome ${userName.value}');
         Get.offNamed(AppRoutes.homePage);
@@ -143,7 +154,6 @@ class AuthController extends GetxController {
           );
           userName.value = await appStorage.read('name');
           userMail.value = await appStorage.read('mail');
-
           print('UserName ${userName.value} UserMail ${userMail.value}');
           Get.offAllNamed(AppRoutes.loginPage);
           return errorMessage.value = '';
@@ -159,8 +169,7 @@ class AuthController extends GetxController {
 
   // Logout
   Future<void> logout() async {
-    await appStorage.delete(_userKey);
-    currentUser.value = null;
+    await appStorage.deleteAll();
     Get.snackbar('Logged Out', 'User session cleared');
     Get.offAllNamed(AppRoutes.registrationPage);
   }

@@ -8,11 +8,13 @@ import 'package:get/get.dart';
 class SplashController extends GetxController {
   final StorageManager _storage = StorageManager();
   final String _userMail = 'user';
+ String? userData = '';
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     _initializeApp();
+     userData = await _storage.read('mail');
   }
 
   void _initializeApp() async {
@@ -20,21 +22,11 @@ class SplashController extends GetxController {
       FlutterNativeSplash.remove();
       await Future.delayed(const Duration(seconds: 2));
 
-      final userData = await _storage.read('mail');
+      print(userData);
 
       if (userData != null) {
-        final userJson = jsonDecode(userData);
-        final user = UserModel.fromJson(userJson);
-
-        if (user.mPin != null && user.mPin!.isNotEmpty) {
-          // User has mPin, go to mPin login page
-          Get.offAllNamed(AppRoutes.loginPage);
-        } else {
-          // User exists but no mPin, go to normal login
-          Get.offAllNamed(AppRoutes.loginPage);
-        }
+        Get.offAllNamed(AppRoutes.loginPage);
       } else {
-        // No user found, go to registration page
         Get.offAllNamed(AppRoutes.registrationPage);
       }
     } catch (e) {

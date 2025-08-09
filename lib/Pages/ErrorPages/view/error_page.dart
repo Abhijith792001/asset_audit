@@ -1,4 +1,5 @@
 import 'package:asset_audit/Pages/ErrorPages/controller/error_controller.dart';
+import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,8 +16,10 @@ class Errorpage extends GetView<ErrorController> {
       appBar: AppBar(
         backgroundColor: AppTheme.whiteColor,
         centerTitle: true,
-        title: Text('MPIN Setup Required'),
-        leading: Icon(LucideIcons.x),
+        title: Text('Error'),
+        leading: IconButton(onPressed: (){
+          Get.offNamed(AppRoutes.registrationPage);
+        }, icon: Icon(LucideIcons.x)),
         actions: [Icon(LucideIcons.ellipsisVertical), SizedBox(width: 5.w)],
       ),
       body: Center(
@@ -31,14 +34,14 @@ class Errorpage extends GetView<ErrorController> {
             ),
             SizedBox(height: 20.h),
             Text(
-              'MPIN not found',
+              'MPIN Setup Required',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20.sp),
             ),
             SizedBox(height: 10.h),
             Padding(
               padding:  EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Please log in through the website first and create your MPIN using the secure portal.',
+                'Go to the website, open the top-left profile menu, and tap "Manage MPIN',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp),
               ),
@@ -66,7 +69,7 @@ class Errorpage extends GetView<ErrorController> {
                         Icon(LucideIcons.link, size: 20, color: Colors.white),
                         SizedBox(width: 4.h),
                         Text(
-                          'Go to Website',
+                          'Go to Portal',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

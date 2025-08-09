@@ -286,7 +286,7 @@ class AssetViewPage extends StatelessWidget {
                       ),
                       SizedBox(height: 5.h),
                       Text(
-                        controller.currentUserMail.value,
+                        controller.userMail.value,
                         style: TextStyle(
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
@@ -343,7 +343,7 @@ class AssetViewPage extends StatelessWidget {
                                   assetList.store == null
                                       ? ''
                                       : assetList.store.toString(),
-                              activityBy: controller.currentUserMail.value,
+                              activityBy: controller.userMail.value,
                               room: controller.selectedRoomId.value,
                               assetStatusOfCurrent: '',
                             );
