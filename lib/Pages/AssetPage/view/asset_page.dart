@@ -1,6 +1,7 @@
 import 'package:asset_audit/Pages/AssetPage/controller/asset_controller.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
+import 'package:asset_audit/widgets/asset_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -34,10 +35,25 @@ class AssetPage extends GetView<AssetController> {
             icon: Icon(LucideIcons.chevronLeft, color: AppTheme.whiteColor),
           ),
         ),
-        body: Column(children: [
-            
-          ],
-        ),
+        body: Obx(() {
+          final assets = controller.assetList.value;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Text('Total Assets : ${controller.assetList.length}'),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: controller.assetList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                return (
+                     AssetCard(assetName: 'assetName', status: 'status')
+                );
+                  },
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

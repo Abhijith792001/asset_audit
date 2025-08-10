@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           getPages: AppPages.pages,
-          initialRoute: AppRoutes.splashPage,
+          initialRoute: AppRoutes.assetPage,
           theme: ThemeData(
             fontFamily: 'Poppins',
             colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryColor),
