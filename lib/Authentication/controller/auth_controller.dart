@@ -13,8 +13,7 @@ class AuthController extends GetxController {
   void onInit() async {
     // TODO: implement onInit
     super.onInit();
-    userName.value = await appStorage.read('name');
-    userMail.value = await appStorage.read('mail');
+    getUserMailName();
     print('${userMail.value} and ${userName.value}');
   }
 
@@ -30,29 +29,17 @@ class AuthController extends GetxController {
   RxString userMail = ''.obs;
   RxString userName = ''.obs;
 
-  // Register User
-  // Future<void> registerUser(String name, String email, String mPin) async {
-  //   try {
-  //     isLoading.value = true;
+  getUserMailName() async {
+    userName.value =
+        await appStorage.read('name') == null
+            ? ""
+            : await appStorage.read('name');
+    userMail.value =
+        await appStorage.read('mail') == null
+            ? ''
+            : await appStorage.read('mail');
+  }
 
-  //     final user = UserModel(name: name, email: email, mPin: mPin);
-  //     final userJson = jsonEncode(user.toJson());
-
-  //     await appStorage.write(_userKey, userJson);
-
-  //     await appStorage.write('userMail', email);
-  //     userMail.value = await appStorage.read('userMail');
-
-  //     currentUser.value = user;
-  //     Get.snackbar('Success', 'User registered successfully');
-  //     Get.offNamed(AppRoutes.loginPage);
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Failed to register user: $e');
-  //     print('Register Error: $e');
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
 
   // Load saved user
   Future<void> loadUser() async {
@@ -68,33 +55,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // // ✅ Login using MPIN
-  // Future<void> loginWithMPin(String enteredMPin) async {
-  //   try {
-  //     isLoading.value = true;
-  //     final storedData = await appStorage.read(_userKey);
 
-  //     if (storedData != null) {
-  //       final jsonMap = jsonDecode(storedData);
-  //       final savedUser = UserModel.fromJson(jsonMap);
-
-  //       if (savedUser.mPin == enteredMPin) {
-  //         currentUser.value = savedUser;
-  //         Get.snackbar('Login Successful', 'Welcome ${savedUser.name}');
-  //         Get.offNamed(AppRoutes.homePage); // 👈 Redirect to homepage
-  //       } else {
-  //         Get.snackbar('Invalid MPIN', 'Please try again');
-  //       }
-  //     } else {
-  //       Get.snackbar('Error', 'No user registered');
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Login failed: $e');
-  //     print('Login Error: $e');
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
   loginWithMPin(String enteredMPin) async {
     isLoading.value = true;
 

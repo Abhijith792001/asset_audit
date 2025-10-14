@@ -9,101 +9,144 @@ class RegistrationPage extends StatelessWidget {
   RegistrationPage({super.key});
 
   final AuthController controller = Get.find<AuthController>();
-
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  // final _mPinController = TextEditingController();
-  // final _remPinController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: Get.width,
-          height: Get.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(-1, -1),
-              end: Alignment(.1, 0),
-              colors: [
-                const Color(0xFFFFBFD2),
-                Color.fromRGBO(241, 242, 237, 1),
-              ],
-            ),
+      body: Container(
+        width: Get.width,
+        height: Get.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFFFBFD2),
+              Color.fromRGBO(241, 242, 237, 1),
+            ],
           ),
-          padding: EdgeInsets.all(16.sp),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 30.h),
-                width: Get.width,
-                child: SvgPicture.asset(
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 40.h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                SvgPicture.asset(
                   'assets/images/amrita_logo.svg',
                   width: 140.w,
                 ),
-              ),
-              Text(
-                "Login Account",
-                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
-              ),
-              // Text(
-              //   'Enter your details below',
-              //   style: TextStyle(fontSize: 12.sp),
-              // ),
-              SizedBox(height: 20.h),
-              Container(
-                padding: EdgeInsets.only(left: 20.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16.sp)),
-                  border: Border.all(color: Colors.black45),
+                SizedBox(height: 30.h),
+
+                // Heading
+                Text(
+                  "Sign in to Your Account",
+                  style: TextStyle(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Email',
-                    border: InputBorder.none,
+                SizedBox(height: 8.h),
+                Text(
+                  "Enter your email to continue",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black54,
                   ),
                 ),
-              ),
-              SizedBox(height: 5.h),
-              Obx(
-                () => Text(
-                  controller.errorMessage.value,
-                  style: TextStyle(color: AppTheme.dangerColor),
-                ),
-              ),
-              SizedBox(height: 10.h),
-              InkWell(
-                onTap: () {
-                  controller.accountChecking(
-                    _emailController.text.trim().toString(),
-                  );
-                  // controller.takeDeviceInfo();
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.h,
-                    horizontal: 15.w,
-                  ),
-                  margin: EdgeInsets.symmetric(horizontal: 15.w),
+                SizedBox(height: 30.h),
+
+                // Email Input
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    gradient: AppTheme.primaryGradient,
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.sp),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'Sign in',
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'Email Address',
+                      border: InputBorder.none,
+                      icon: Icon(Icons.email_outlined, color: Colors.grey[600]),
                     ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 5.h),
+
+                // Error Message
+                Obx(
+                  () => controller.errorMessage.value.isEmpty
+                      ? SizedBox.shrink()
+                      : Padding(
+                          padding: EdgeInsets.only(top: 5.h),
+                          child: Text(
+                            controller.errorMessage.value,
+                            style: TextStyle(
+                              color: AppTheme.dangerColor,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                        ),
+                ),
+                SizedBox(height: 30.h),
+
+                // Sign In Button
+                InkWell(
+                  onTap: () {
+                    controller.accountChecking(
+                      _emailController.text.trim(),
+                    );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(32.sp),
+                      gradient: AppTheme.primaryGradient,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'Sign In',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20.h),
+                // Optional: Footer Text
+                Text(
+                  "By continuing, you agree to our Terms & Conditions",
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.black45,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),
