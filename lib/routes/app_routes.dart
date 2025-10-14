@@ -9,4 +9,5 @@ class AppRoutes {
   static String modernLoginPage = '/modernLoginPage';
   static String errorPage = '/errorPage';
   static String assetPage = '/assetPage';
+  static String reportsPage = '/reportsPage';
 }

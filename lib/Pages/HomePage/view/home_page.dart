@@ -46,12 +46,13 @@ class HomePage extends GetView<HomeController> {
               title: Text('Settings'),
               onTap: () => Navigator.pop(context),
             ),
-            Divider(),
+            // Divider(),
+            Spacer(),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Logout'),
               onTap: () {
-                _authControler.logout(); // optional: logout logic
+                _authControler.logout(); 
               },
             ),
           ],
@@ -284,7 +285,9 @@ class HomePage extends GetView<HomeController> {
             Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => {},
+                onTap: () => {
+                   Get.toNamed(AppRoutes.reportsPage)
+                },
                 borderRadius: BorderRadius.circular(10),
                 child: _buildBottomNavItem(Icons.bar_chart, 'Reports'),
               ),
@@ -292,7 +295,9 @@ class HomePage extends GetView<HomeController> {
             Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => {},
+                onTap: () => {
+                  Get.toNamed(AppRoutes.assetPage)
+                },
                 borderRadius: BorderRadius.circular(10),
                 child: _buildBottomNavItem(LucideIcons.box, 'Assets'),
               ),
