@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asset_audit/service/common_interceptors.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart' as get_pack;
 import 'package:get/utils.dart';
 
@@ -9,7 +10,7 @@ class ApiService {
   var headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': 'Token 0714710f8ddac97:bcb24dd3971feb2',
+    'Authorization': dotenv.env['API_TOKEN']!,
   };
 
   late Dio dio;
@@ -32,13 +33,13 @@ class ApiService {
     }
   }
 
-  postApi(String value, Map<String, dynamic> data) async {
+  postApi(String value,dynamic data) async {
     try {
       Response response = await dio.post(
         'https://icts.amrita.ac.in/api/method/helpdesk.api.doc.$value',
         data: json.encode(data),
       );
-     return response;
+      return response;
     } catch (e) {
       Get.snackbar('Error', "Api response is not working ${e.toString()}");
     }

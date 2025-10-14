@@ -3,10 +3,12 @@ import 'package:asset_audit/routes/app_pages.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-main() {
+Future<void> main() async {
+  await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(AuthController()); // 👈 Very important
   runApp(MyApp());
