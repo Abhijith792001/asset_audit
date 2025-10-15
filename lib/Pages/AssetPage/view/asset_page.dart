@@ -2,6 +2,7 @@ import 'package:asset_audit/Pages/AssetPage/controller/asset_controller.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class AssetPage extends StatelessWidget {
@@ -48,7 +49,10 @@ class AssetPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Colors.white,
+                          ),
                           onPressed: () => Get.back(),
                         ),
                         const Spacer(),
@@ -58,7 +62,11 @@ class AssetPage extends StatelessWidget {
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.filter_list_rounded, color: Colors.white, size: 22),
+                          child: const Icon(
+                            Icons.filter_list_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ],
                     ),
@@ -73,14 +81,16 @@ class AssetPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Obx(() => Text(
-                      "${controller.assets.length} items",
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                    Obx(
+                      () => Text(
+                        "${controller.assets.length} items",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 24),
                     // Modern Search Bar
                     Container(
@@ -101,11 +111,17 @@ class AssetPage extends StatelessWidget {
                         decoration: InputDecoration(
                           hintText: "Search assets...",
                           hintStyle: TextStyle(color: Colors.grey.shade400),
-                          prefixIcon: Icon(Icons.search_rounded, color: AppTheme.primaryColor, size: 24),
+                          prefixIcon: Icon(
+                            Icons.search_rounded,
+                            color: AppTheme.primaryColor,
+                            size: 24,
+                          ),
                           // suffixIcon: Icon(Icons.mic_rounded, color: Colors.grey.shade400, size: 22),
                           filled: true,
                           fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
@@ -118,7 +134,7 @@ class AssetPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Content Section
           Expanded(
             child: Obx(() {
@@ -128,7 +144,9 @@ class AssetPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppTheme.primaryColor,
+                        ),
                         strokeWidth: 3,
                       ),
                       const SizedBox(height: 16),
@@ -143,7 +161,7 @@ class AssetPage extends StatelessWidget {
                   ),
                 );
               }
-      
+
               if (controller.assets.isEmpty) {
                 return Center(
                   child: Column(
@@ -182,7 +200,7 @@ class AssetPage extends StatelessWidget {
                   ),
                 );
               }
-      
+
               return ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
                 itemCount: controller.assets.length,
@@ -228,7 +246,9 @@ class AssetPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      color: AppTheme.primaryColor.withOpacity(
+                                        0.3,
+                                      ),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
@@ -257,9 +277,15 @@ class AssetPage extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 8),
-                                    _buildInfoChip(Icons.category_rounded, asset.productCategory),
+                                    _buildInfoChip(
+                                      Icons.category_rounded,
+                                      asset.productCategory,
+                                    ),
                                     const SizedBox(height: 6),
-                                    _buildInfoChip(Icons.style_rounded, asset.productModel),
+                                    _buildInfoChip(
+                                      Icons.style_rounded,
+                                      asset.productModel,
+                                    ),
                                     const SizedBox(height: 6),
                                     _buildStatusChip(asset.assetStatus),
                                   ],
@@ -290,71 +316,32 @@ class AssetPage extends StatelessWidget {
           ),
         ],
       ),
-      // Modern Floating Pagination
-      floatingActionButton: Obx(() => Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+      bottomNavigationBar: Obx(
+        () => BottomAppBar(
+          color: AppTheme.grayLightColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.chevron_left_rounded),
+                onPressed:
+                    controller.page.value > 1 ? controller.previousPage : null,
+              ),
+              Text('Page ${controller.page.value}',style: TextStyle(
+                fontSize: 15.sp,color: AppTheme.primaryColor
+              ),),
+              IconButton(
+                icon: const Icon(Icons.chevron_right_rounded),
+                onPressed:
+                    (controller.page.value * controller.limit) <
+                            controller.allAssets.length
+                        ? controller.nextPage
+                        : null,
+              ),
+            ],
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: controller.page.value > 1 
-                    ? AppTheme.primaryColor 
-                    : Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.chevron_left_rounded, color: Colors.white),
-                onPressed: controller.page.value > 1 ? controller.previousPage : null,
-                iconSize: 24,
-                padding: const EdgeInsets.all(8),
-                constraints: const BoxConstraints(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Page ${controller.page.value}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: AppTheme.primaryColor,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: (controller.page.value * controller.limit) < controller.allAssets.length
-                    ? AppTheme.primaryColor
-                    : Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.chevron_right_rounded, color: Colors.white),
-                onPressed: (controller.page.value * controller.limit) < controller.allAssets.length 
-                    ? controller.nextPage 
-                    : null,
-                iconSize: 24,
-                padding: const EdgeInsets.all(8),
-                constraints: const BoxConstraints(),
-              ),
-            ),
-          ],
-        ),
-      )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ),
     );
   }
 
@@ -366,10 +353,7 @@ class AssetPage extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -399,10 +383,7 @@ class AssetPage extends StatelessWidget {
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: statusColor,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
         Text(

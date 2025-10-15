@@ -1,4 +1,4 @@
-package com.example.asset_audit
+package com.icts.app
 
 import io.flutter.embedding.android.FlutterActivity
 
