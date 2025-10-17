@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
+
 
 class MPinLoginPage extends StatelessWidget {
   MPinLoginPage({super.key});
@@ -28,58 +30,70 @@ class MPinLoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFDFDFD),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Top Section
-              Column(
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: 40.h),
-                  SvgPicture.asset('assets/images/amrita_logo.svg', width: 110.w),
-                  SizedBox(height: 20.h),
-                  Text("Welcome Back",
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      )),
-                  Text("Enter your MPIN",
-                      style: TextStyle(fontSize: 13.sp, color: Colors.black54)),
-                  SizedBox(height: 40.h),
-
-                  // MPIN Indicator
-                  Obx(() => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(6, (index) {
-                          final filled = index < mPin.value.length;
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 6.w),
-                            width: 14.w,
-                            height: 14.w,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: filled ? Colors.black : Colors.black26,
-                            ),
-                          );
-                        }),
-                      )),
+                  // Top Section
+                  Column(
+                    children: [
+                      SizedBox(height: 40.h),
+                      SvgPicture.asset('assets/images/amrita_logo.svg', width: 110.w),
+                      SizedBox(height: 20.h),
+                      Text("Welcome Back ",
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          )),
+                      Text("Enter your MPIN",
+                          style: TextStyle(fontSize: 13.sp, color: Colors.black54)),
+                      SizedBox(height: 40.h),
+            
+                      // MPIN Indicator
+                      Obx(() => Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(6, (index) {
+                              final filled = index < mPin.value.length;
+                              return Container(
+                                margin: EdgeInsets.symmetric(horizontal: 6.w),
+                                width: 14.w,
+                                height: 14.w,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: filled ? Colors.black : Colors.black26,
+                                ),
+                              );
+                            }),
+                          )),
+                    ],
+                  ),
+            
+                  // Keypad Section
+                  Column(
+                    children: [
+                      buildKeypadRow(['1', '2', '3']),
+                      buildKeypadRow(['4', '5', '6']),
+                      buildKeypadRow(['7', '8', '9']),
+                      buildKeypadRow(['', '0', '⌫']),
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
                 ],
               ),
-
-              // Keypad Section
-              Column(
-                children: [
-                  buildKeypadRow(['1', '2', '3']),
-                  buildKeypadRow(['4', '5', '6']),
-                  buildKeypadRow(['7', '8', '9']),
-                  buildKeypadRow(['', '0', '⌫']),
-                  SizedBox(height: 30.h),
-                ],
-              ),
-            ],
-          ),
+            ),
+            Obx(() {
+              return authController.isLoading.value
+                  ? Container(
+                      color: Colors.black.withOpacity(0.3), // dim background
+                      child: Center(child: Lottie.asset('assets/loading/Loading.json')),
+                    )
+                  : const SizedBox.shrink();
+            }),
+          ],
         ),
       ),
     );

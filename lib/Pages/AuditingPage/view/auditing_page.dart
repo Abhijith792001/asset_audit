@@ -233,99 +233,113 @@ class AuditingPage extends GetView<AuditingController> {
                   // Search Manual Button
                   Expanded(
                     child: InkWell(
-                      onTap: () => {
-                        Get.dialog(
-                          Dialog(
-                            backgroundColor: Colors.transparent,
-                            child: Container(
-                              padding: EdgeInsets.all(24.w),
-                              decoration: BoxDecoration(
-                                color: AppTheme.whiteColor,
-                                borderRadius: BorderRadius.circular(24.w),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    LucideIcons.search,
-                                    size: 48.sp,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  Text(
-                                    'Enter Asset Number',
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold,
+                      onTap: () {
+                        if (controller.selectedRoom.value.isEmpty &&
+                            controller.selectedFloor.value.isEmpty) {
+                          Get.snackbar('Not Selected', 'Please select Room & Floor');
+                        } else if (controller.selectedRoom.value.isEmpty) {
+                          Get.snackbar('Not Selected', 'Please select the Room');
+                        } else if (controller.selectedFloor.value.isEmpty) {
+                          Get.snackbar('Not Selected', 'Please select the Floor');
+                        } else {
+                          Get.dialog(
+                            Dialog(
+                              backgroundColor: Colors.transparent,
+                              child: Container(
+                                padding: EdgeInsets.all(24.w),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.whiteColor,
+                                  borderRadius: BorderRadius.circular(24.w),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      LucideIcons.search,
+                                      size: 48.sp,
                                       color: AppTheme.primaryColor,
                                     ),
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  TextField(
-                                    controller: _assetNumber,
-                                    decoration: InputDecoration(
-                                      hintText: 'Asset Number',
-                                      filled: true,
-                                      fillColor: AppTheme.grayLightColor,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12.w),
-                                        borderSide: BorderSide.none,
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      'Enter Asset Number',
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryColor,
                                       ),
-                                      prefixIcon: Icon(LucideIcons.hash),
                                     ),
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextButton(
-                                          onPressed: () => Get.back(),
-                                          style: TextButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12.w),
+                                    SizedBox(height: 20.h),
+                                    TextField(
+                                      controller: _assetNumber,
+                                      decoration: InputDecoration(
+                                        hintText: 'Asset Number',
+                                        filled: true,
+                                        fillColor: AppTheme.grayLightColor,
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12.w),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        prefixIcon: Icon(LucideIcons.hash),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.h),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextButton(
+                                            onPressed: () => Get.back(),
+                                            style: TextButton.styleFrom(
+                                              padding:
+                                                  EdgeInsets.symmetric(vertical: 12.h),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.w),
+                                              ),
                                             ),
-                                          ),
-                                          child: Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16.sp,
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16.sp,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () async {
-                                            await controller.getAsset(_assetNumber.text.trim());
-                                            Get.toNamed(AppRoutes.assetViewPage);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppTheme.primaryColor,
-                                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12.w),
+                                        SizedBox(width: 12.w),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              await controller.getAsset(
+                                                  _assetNumber.text.trim());
+                                              Get.toNamed(AppRoutes.assetViewPage);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppTheme.primaryColor,
+                                              padding:
+                                                  EdgeInsets.symmetric(vertical: 12.h),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12.w),
+                                              ),
                                             ),
-                                          ),
-                                          child: Text(
-                                            'Search',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16.sp,
-                                              color: AppTheme.whiteColor,
+                                            child: Text(
+                                              'Search',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16.sp,
+                                                color: AppTheme.whiteColor,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        }
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),

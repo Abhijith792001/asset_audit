@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 class AssetPage extends StatelessWidget {
   final AssetController controller = Get.put(AssetController());
@@ -143,13 +144,8 @@ class AssetPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppTheme.primaryColor,
-                        ),
-                        strokeWidth: 3,
-                      ),
-                      const SizedBox(height: 16),
+                      Lottie.asset('assets/loading/Loading.json'),
+                      // const SizedBox(height: 16),
                       Text(
                         "Loading assets...",
                         style: TextStyle(
