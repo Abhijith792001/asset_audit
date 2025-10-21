@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:asset_audit/Pages/AuditingPage/controller/auditing_controller.dart';
+import 'package:asset_audit/Pages/AuditingPage/model/scanned_model.dart';
 import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:asset_audit/utils/storage_manager.dart';
@@ -26,7 +28,8 @@ class AuditingPage extends GetView<AuditingController> {
     );
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => {
+      onPopInvoked:
+          (didPop) => {
         if (!didPop) {Get.offNamed(AppRoutes.homePage)},
       },
       child: Scaffold(
@@ -36,11 +39,6 @@ class AuditingPage extends GetView<AuditingController> {
             // Modern Header Section
             Container(
               decoration: BoxDecoration(
-                // gradient: LinearGradient(
-                //   colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.8)],
-                //   begin: Alignment.topLeft,
-                //   end: Alignment.bottomRight,
-                // ),
                 gradient: AppTheme.primaryGradient,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30.w),
@@ -116,21 +114,37 @@ class AuditingPage extends GetView<AuditingController> {
                           ),
                           child: CustomDropdown(
                             hint: 'Select Floor',
-                            selectedValue: controller.pendingFloors.value.length == 0
-                                ? null
-                                : controller.pendingFloors.value.first.message!
+                            selectedValue:
+                                controller.pendingFloors.value.length == 0
+                                    ? null
+                                    : controller
+                                            .pendingFloors
+                                            .value
+                                            .first
+                                            .message!
+                                            .pendingRoomsByFloor!
+                                            .map((f) => f.floorName)
+                                            .contains(
+                                              controller.selectedFloor.value,
+                                            )
+                                        ? controller.selectedFloor.value
+                                        : null,
+                            items:
+                                controller.pendingFloors.value.length == 0
+                                    ? []
+                                    : controller
+                                        .pendingFloors
+                                        .value
+                                        .first
+                                        .message!
                                         .pendingRoomsByFloor!
-                                        .map((f) => f.floorName)
-                                        .contains(controller.selectedFloor.value)
-                                    ? controller.selectedFloor.value
-                                    : null,
-                            items: controller.pendingFloors.value.length == 0
-                                ? []
-                                : controller.pendingFloors.value.first.message!
-                                    .pendingRoomsByFloor!
-                                    .map((floor) => floor.floorName.toString())
-                                    .toList(),
-                            onChanged: (value) => controller.setSelectedPendingFloor(value),
+                                        .map(
+                                          (floor) => floor.floorName.toString(),
+                                        )
+                                        .toList(),
+                            onChanged:
+                                (value) =>
+                                    controller.setSelectedPendingFloor(value),
                           ),
                         ),
                       ),
@@ -151,15 +165,22 @@ class AuditingPage extends GetView<AuditingController> {
                           ),
                           child: CustomDropdown(
                             hint: 'Select Room',
-                            selectedValue: controller.selectedRoom.value == null
-                                ? ''
-                                : controller.selectedRoom.value.trim(),
-                            items: controller.pendingRooms.length == 0
-                                ? []
-                                : controller.pendingRooms
-                                    .map((room) => room.roomName.toString().trim())
-                                    .toList(),
-                            onChanged: (value) => controller.setSelectedPendingRoom(value),
+                            selectedValue:
+                                controller.selectedRoom.value == null
+                                    ? ''
+                                    : controller.selectedRoom.value.trim(),
+                            items:
+                                controller.pendingRooms.length == 0
+                                    ? []
+                                    : controller.pendingRooms
+                                        .map(
+                                          (room) =>
+                                              room.roomName.toString().trim(),
+                                        )
+                                        .toList(),
+                            onChanged:
+                                (value) =>
+                                    controller.setSelectedPendingRoom(value),
                           ),
                         ),
                       ),
@@ -168,14 +189,21 @@ class AuditingPage extends GetView<AuditingController> {
                       Obx(() {
                         if (controller.selectedFloor.isEmpty) {
                           return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 8.h,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.red.shade100.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(10.w),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.info_outline, color: Colors.white, size: 18.sp),
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.white,
+                                  size: 18.sp,
+                                ),
                                 SizedBox(width: 8.w),
                                 Expanded(
                                   child: Text(
@@ -193,14 +221,21 @@ class AuditingPage extends GetView<AuditingController> {
                         }
                         if (controller.selectedRoom.isEmpty) {
                           return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 8.h,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.orange.shade100.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(10.w),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.info_outline, color: Colors.white, size: 18.sp),
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.white,
+                                  size: 18.sp,
+                                ),
                                 SizedBox(width: 8.w),
                                 Expanded(
                                   child: Text(
@@ -223,7 +258,7 @@ class AuditingPage extends GetView<AuditingController> {
                 ),
               ),
             ),
-        
+
             // Action Buttons Row
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -234,13 +269,12 @@ class AuditingPage extends GetView<AuditingController> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        if (controller.selectedRoom.value.isEmpty &&
+                        if (controller.selectedRoom.value.isEmpty ||
                             controller.selectedFloor.value.isEmpty) {
-                          Get.snackbar('Not Selected', 'Please select Room & Floor');
-                        } else if (controller.selectedRoom.value.isEmpty) {
-                          Get.snackbar('Not Selected', 'Please select the Room');
-                        } else if (controller.selectedFloor.value.isEmpty) {
-                          Get.snackbar('Not Selected', 'Please select the Floor');
+                          Get.snackbar(
+                            'Not Selected',
+                            'Please select a Floor and Room first.',
+                          );
                         } else {
                           Get.dialog(
                             Dialog(
@@ -276,7 +310,9 @@ class AuditingPage extends GetView<AuditingController> {
                                         filled: true,
                                         fillColor: AppTheme.grayLightColor,
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12.w),
+                                          borderRadius: BorderRadius.circular(
+                                            12.w,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                         prefixIcon: Icon(LucideIcons.hash),
@@ -289,8 +325,9 @@ class AuditingPage extends GetView<AuditingController> {
                                           child: TextButton(
                                             onPressed: () => Get.back(),
                                             style: TextButton.styleFrom(
-                                              padding:
-                                                  EdgeInsets.symmetric(vertical: 12.h),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 12.h,
+                                              ),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(12.w),
@@ -309,14 +346,31 @@ class AuditingPage extends GetView<AuditingController> {
                                         Expanded(
                                           child: ElevatedButton(
                                             onPressed: () async {
-                                              await controller.getAsset(
-                                                  _assetNumber.text.trim());
-                                              Get.toNamed(AppRoutes.assetViewPage);
+                                              final assetNumber =
+                                                  _assetNumber.text.trim();
+                                              if (assetNumber.isEmpty) {
+                                                Get.snackbar(
+                                                  'Input Required',
+                                                  'Please enter an asset number',
+                                                );
+                                                return;
+                                              }
+
+                                              // The duplicate check is now handled inside getAsset
+                                              final success = await controller.getAsset(assetNumber);
+                                              if (success) {
+                                                Get.back(); // Close the dialog
+                                                _assetNumber.clear(); // Clear text field for next time
+                                                Get.toNamed(
+                                                  AppRoutes.assetViewPage,
+                                                );
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: AppTheme.primaryColor,
-                                              padding:
-                                                  EdgeInsets.symmetric(vertical: 12.h),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 12.h,
+                                              ),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(12.w),
@@ -342,7 +396,10 @@ class AuditingPage extends GetView<AuditingController> {
                         }
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.h,
+                          horizontal: 12.w,
+                        ),
                         decoration: BoxDecoration(
                           color: AppTheme.secondaryColor,
                           borderRadius: BorderRadius.circular(16.w),
@@ -381,7 +438,7 @@ class AuditingPage extends GetView<AuditingController> {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        Get.dialog(
+                         Get.dialog(
                           Dialog(
                             backgroundColor: Colors.transparent,
                             child: Container(
@@ -396,7 +453,9 @@ class AuditingPage extends GetView<AuditingController> {
                                   Container(
                                     padding: EdgeInsets.all(16.w),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor.withOpacity(0.1),
+                                      color: AppTheme.primaryColor.withOpacity(
+                                        0.1,
+                                      ),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
@@ -429,9 +488,12 @@ class AuditingPage extends GetView<AuditingController> {
                                         child: TextButton(
                                           onPressed: () => Get.back(),
                                           style: TextButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12.w),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.w),
                                             ),
                                           ),
                                           child: Text(
@@ -455,10 +517,14 @@ class AuditingPage extends GetView<AuditingController> {
                                             Get.back();
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppTheme.primaryColor,
-                                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                                            backgroundColor:
+                                                AppTheme.primaryColor,
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12.w),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.w),
                                             ),
                                           ),
                                           child: Text(
@@ -480,7 +546,10 @@ class AuditingPage extends GetView<AuditingController> {
                         );
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12.h,
+                          horizontal: 12.w,
+                        ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -522,7 +591,7 @@ class AuditingPage extends GetView<AuditingController> {
                 ],
               ),
             ),
-        
+
             // Scanned Assets Section Header
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -552,105 +621,127 @@ class AuditingPage extends GetView<AuditingController> {
                 ],
               ),
             ),
-        
+
             SizedBox(height: 16.h),
-        
+
             // Assets List
             Obx(
               () => Expanded(
                 child: Skeletonizer(
+                  // --- 💥 FIX APPLIED HERE 💥 ---
+                  // key: const ValueKey('auditing_skeletonizer'), // Removed this key
                   enabled: controller.isLoading.value,
                   enableSwitchAnimation: true,
                   child: RefreshIndicator(
-                    onRefresh: () async {},
-                    child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      itemCount: controller.isLoading.value
-                          ? 5
-                          : controller.auditAssets.value.length == 0 ||
-                                  controller.auditAssets.value.first.message!.length == 0
-                              ? 1
-                              : controller.auditAssets.first.message!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (controller.isLoading.value) {
-                          return Column(
-                            key: ValueKey('skeleton_$index'),
-                            children: [
-                              SizedBox(height: 8.h),
-                              AssetCard(
-                                assetName: "Loading Asset Name",
-                                status: "Loading Status",
-                              ),
-                            ],
-                          );
-                        }
-        
-                        if (controller.auditAssets.value.length == 0 ||
-                            controller.auditAssets.value.first.message!.length == 0) {
-                          return Center(
-                            key: ValueKey('empty_state'),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 20.h),
-                              child: Column(
+                    onRefresh: () async {
+                      if (controller.selectedRoomId.value.isNotEmpty) {
+                        controller.fetchAuditedAssets(
+                          buildingId,
+                          controller.selectedFloorId.value,
+                          controller.selectedRoomId.value,
+                        );
+                      }
+                    },
+                    child: Builder(
+                      builder: (context) {
+                        final hasValidData = controller.auditAssets.isNotEmpty &&
+                            controller.auditAssets.first.message != null &&
+                            controller.auditAssets.first.message!.isNotEmpty;
+
+                        final itemCount = controller.isLoading.value
+                            ? 5
+                            : hasValidData
+                                ? controller.auditAssets.first.message!.length
+                                : 1;
+
+                        return ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          itemCount: itemCount,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (controller.isLoading.value) {
+                              return Column(
+                                key: ValueKey('skeleton_$index'),
                                 children: [
-                                  Container(
-                                    padding: EdgeInsets.all(20.w),
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      LucideIcons.scanLine,
-                                      size: 30.sp,
-                                      color: AppTheme.primaryColor.withOpacity(0.6),
-                                    ),
-                                  ),
-                                  SizedBox(height: 24.h),
-                                  Text(
-                                    'No assets scanned yet',
-                                    style: TextStyle(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
                                   SizedBox(height: 8.h),
-                                  Text(
-                                    'Tap the button below to start scanning',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey.shade500,
-                                    ),
+                                  const AssetCard(
+                                    assetName: "Loading Asset Name",
+                                    status: "Loading Status",
                                   ),
                                 ],
-                              ),
-                            ),
-                          );
-                        }
-        
-                        final asset = controller.auditAssets.first.message![index];
-                        return Padding(
-                          key: ValueKey(asset.asset),
-                          padding: EdgeInsets.only(bottom: 12.h),
-                          child: AssetCard(
-                            key: ValueKey('${asset.asset}_card'),
-                            assetName: asset.asset.toString(),
-                            status: asset.auditStatus.toString(),
-                          ),
+                              );
+                            } else if (!hasValidData) {
+                              return Center(
+                                key: const ValueKey('empty_state'),
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 20.h),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(20.w),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primaryColor.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          LucideIcons.scanLine,
+                                          size: 30.sp,
+                                          color: AppTheme.primaryColor.withOpacity(0.6),
+                                        ),
+                                      ),
+                                      SizedBox(height: 24.h),
+                                      Text(
+                                        'No assets scanned yet',
+                                        style: TextStyle(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade700,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Text(
+                                        'Select a floor and room to see assets',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: Colors.grey.shade500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              if (index >= controller.auditAssets.first.message!.length) {
+                                return const SizedBox.shrink();
+                              }
+                              final asset = controller.auditAssets.first.message![index];
+                              return Padding(
+                                key: ValueKey(asset.asset),
+                                padding: EdgeInsets.only(bottom: 12.h),
+                                child: AssetCard(
+                                  key: ValueKey('${asset.asset}_card'),
+                                  assetName: asset.asset.toString(),
+                                  status: asset.auditStatus.toString(),
+                                ),
+                              );
+                            }
+                          },
                         );
                       },
                     ),
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
         // Modern Floating Action Button
         floatingActionButton: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.8)],
+              colors: [
+                AppTheme.primaryColor,
+                AppTheme.primaryColor.withOpacity(0.8),
+              ],
             ),
             borderRadius: BorderRadius.circular(30.w),
             boxShadow: [
@@ -662,8 +753,12 @@ class AuditingPage extends GetView<AuditingController> {
             ],
           ),
           child: FloatingActionButton.extended(
-            onPressed: () => controller.scanAndFetch(context),
-            icon: Icon(LucideIcons.qrCode, color: AppTheme.whiteColor, size: 24.sp),
+            onPressed: () => controller.scanAndFetch(context,),
+            icon: Icon(
+              LucideIcons.qrCode,
+              color: AppTheme.whiteColor,
+              size: 24.sp,
+            ),
             label: Text(
               'Scan Assets',
               style: TextStyle(

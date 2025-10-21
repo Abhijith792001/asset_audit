@@ -126,81 +126,51 @@ class AuditingController extends GetxController {
   Future<void> scanAndFetch(BuildContext context) async {
     if (selectedRoom.value.isEmpty && selectedFloor.value.isEmpty) {
       Get.snackbar('Not Selected', 'Please select Room & Floor');
+      return;
     } else if (selectedRoom.value.isEmpty) {
       Get.snackbar('Not Selected', 'Please select the Room');
+      return;
     } else if (selectedFloor.value.isEmpty) {
       Get.snackbar('Not Selected', 'Please select the Floor');
-    } else {
-      final result = await SimpleBarcodeScanner.scanBarcode(
-        context,
-        barcodeAppBar: const BarcodeAppBar(
-          appBarTitle: 'Scan Asset Barcode',
-          centerTitle: true,
-          enableBackButton: true,
-          backButtonIcon: Icon(Icons.arrow_back_ios),
-        ),
-        isShowFlashIcon: true,
-        delayMillis: 1,
+      return;
+    }
+
+    final result = await SimpleBarcodeScanner.scanBarcode(
+      context,
+      barcodeAppBar: const BarcodeAppBar(
+        appBarTitle: 'Scan Asset Barcode',
+        centerTitle: true,
+        enableBackButton: true,
+        backButtonIcon: Icon(Icons.arrow_back_ios),
+      ),
+      isShowFlashIcon: true,
+      delayMillis: 1,
+    );
+
+    if (result == null || result.isEmpty || result == '-1') return;
+
+    barcode.value = result;
+
+    // Fetch the asset details and go to AssetViewPage
+    final success = await getAsset(result);
+    if (success) {
+      Get.toNamed(
+        AppRoutes.assetViewPage,
+        arguments: {'floor': selectedFloorId},
       );
-
-      if (result != null && result.isNotEmpty && result != '-1') {
-        barcode.value = result;
-
-        bool isDuplicate = false;
-
-        // Check if the asset is already in the audited list from the server
-        if (auditAssets.isNotEmpty && auditAssets.first.message != null) {
-          final alreadyAudited = auditAssets.first.message!.any(
-            (auditedAsset) => auditedAsset.asset == result,
-          );
-          if (alreadyAudited) {
-            isDuplicate = true;
-          }
-        }
-
-        // Check if scanned already (locally)
-        if (!isDuplicate) {
-          var existingData = await appStorage.read("scannedAssets");
-          if (existingData != null) {
-            List<dynamic> decoded = jsonDecode(existingData);
-            final existingScans = decoded
-                .map((e) => ScannedModel.fromJson(e as Map<String, dynamic>))
-                .toList();
-
-            final alreadyScanned = existingScans.any(
-              (item) => item.assetNo == result,
-            );
-
-            if (alreadyScanned) {
-              isDuplicate = true;
-            }
-          }
-        }
-
-        if (isDuplicate) {
-          final proceed = await showDuplicateDialog();
-          if (!proceed) {
-            return; // Stop if user cancels
-          }
-        }
-
-        // Not a duplicate, or user chose to proceed → continue
-        await getAsset(result);
-        Get.toNamed(AppRoutes.assetViewPage);
-      }
     }
   }
 
   //Get asset
-  getAsset(String code) async {
+  Future<bool> getAsset(String code) async {
     try {
       isLoading.value = true;
       final response = await apiService.getApi('get_one?id=$code');
 
       if (response['message'] != null) {
-        final assetList = response['message'];
-        if (assetList.isNotEmpty) {
-          assets.value = await [AssetModel.fromJson(assetList)];
+        final assetData = response['message'];
+        if (assetData is Map<String, dynamic>) {
+          assets.value = [AssetModel.fromJson(assetData)];
 
           final assetOwnerEmail =
               assets.value.first.ownerUser?.toString() ?? '';
@@ -219,10 +189,13 @@ class AuditingController extends GetxController {
 
           print(selectedUser.value);
           print(assets.value.first);
+          return true;
         } else {
           Get.snackbar('Not Found', 'No asset found...');
+          return false;
         }
       }
+      return false;
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -231,6 +204,7 @@ class AuditingController extends GetxController {
         backgroundColor: Colors.red.withOpacity(0.8),
         colorText: Colors.white,
       );
+      return false;
     } finally {
       isLoading.value = false;
     }
