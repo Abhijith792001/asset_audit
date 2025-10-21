@@ -97,7 +97,30 @@ class AuditingController extends GetxController {
     }
   }
 
-  
+  Future<bool> showDuplicateDialog() async {
+    final result = await Get.dialog<bool>(
+      AlertDialog(
+        backgroundColor: AppTheme.whiteColor,
+        title: Text('Duplicate Detected'),
+        content: Text('This is a duplicate. Do you want to continue?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(result: false); // Close the dialog
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back(result: true);
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
 
   //Barcode
   Future<void> scanAndFetch(BuildContext context) async {
@@ -123,32 +146,45 @@ class AuditingController extends GetxController {
       if (result != null && result.isNotEmpty && result != '-1') {
         barcode.value = result;
 
-        // Check if scanned already
-        var existingData = await appStorage.read("scannedAssets");
-        if (existingData != null) {
-          List<dynamic> decoded = jsonDecode(existingData);
-          final existingScans =
-              decoded
-                  .map((e) => ScannedModel.fromJson(e as Map<String, dynamic>))
-                  .toList();
+        bool isDuplicate = false;
 
-          final alreadyScanned = existingScans.any(
-            (item) => item.assetNo == result,
+        // Check if the asset is already in the audited list from the server
+        if (auditAssets.isNotEmpty && auditAssets.first.message != null) {
+          final alreadyAudited = auditAssets.first.message!.any(
+            (auditedAsset) => auditedAsset.asset == result,
           );
-
-          if (alreadyScanned) {
-            Get.snackbar(
-              'Duplicate Scan',
-              'This asset was already scanned!',
-              backgroundColor: Colors.orange,
-              colorText: Colors.white,
-              snackPosition: SnackPosition.BOTTOM,
-            );
-            return; // stop here
+          if (alreadyAudited) {
+            isDuplicate = true;
           }
         }
 
-        // Not scanned yet → proceed
+        // Check if scanned already (locally)
+        if (!isDuplicate) {
+          var existingData = await appStorage.read("scannedAssets");
+          if (existingData != null) {
+            List<dynamic> decoded = jsonDecode(existingData);
+            final existingScans = decoded
+                .map((e) => ScannedModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+
+            final alreadyScanned = existingScans.any(
+              (item) => item.assetNo == result,
+            );
+
+            if (alreadyScanned) {
+              isDuplicate = true;
+            }
+          }
+        }
+
+        if (isDuplicate) {
+          final proceed = await showDuplicateDialog();
+          if (!proceed) {
+            return; // Stop if user cancels
+          }
+        }
+
+        // Not a duplicate, or user chose to proceed → continue
         await getAsset(result);
         Get.toNamed(AppRoutes.assetViewPage);
       }
