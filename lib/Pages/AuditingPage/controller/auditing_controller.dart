@@ -390,26 +390,32 @@ class AuditingController extends GetxController {
     selectedRoom.value = '';
     auditAssets.value = [];
 
-    final filteredData =
-        pendingFloors.first.message!.pendingRoomsByFloor!
-            .where((e) => e.floorName == value)
-            .map((e) => e.rooms)
-            .first;
-    print(jsonEncode(filteredData));
-    if (filteredData != null && filteredData.length != 0) {
-      pendingRooms.value =
-          await filteredData
-              .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
-              .toList();
-    }
+    final floors = pendingFloors.first.message?.pendingRoomsByFloor;
+    final matchingFloors = floors?.where((floor) => floor.floorName == value);
+    final floorData = (matchingFloors != null && matchingFloors.isNotEmpty) ? matchingFloors.first : null;
 
-    final floorId =
-        pendingFloors.first.message?.pendingRoomsByFloor?.first.floorId ?? '';
-    if (floorId != '') {
-      selectedFloorId.value = floorId.toString();
-      log('----------------> floor id ${selectedFloorId}');
+    if (floorData != null) {
+      final roomsList = floorData.rooms;
+      if (roomsList != null && roomsList.isNotEmpty) {
+        pendingRooms.value = roomsList
+            .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
+            .toList();
+      } else {
+        pendingRooms.value = [];
+      }
+
+      final floorId = floorData.floorId ?? '';
+      if (floorId.isNotEmpty) {
+        selectedFloorId.value = floorId.toString();
+        log('----------------> floor id ${selectedFloorId}');
+      } else {
+        log('floor id not found for floor name: $value');
+        selectedFloorId.value = '';
+      }
     } else {
-      log('floor is fetching is error ');
+      log('floor data not found for floor name: $value');
+      pendingRooms.value = [];
+      selectedFloorId.value = '';
     }
   }
 
