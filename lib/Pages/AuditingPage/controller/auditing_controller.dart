@@ -97,67 +97,7 @@ class AuditingController extends GetxController {
     }
   }
 
-  // void setSelectedFloor(String value) {
-  //   // Update floor and reset room every time
-  //   selectedFloor.value = value;
-  //   selectedRoom.value = '';
-  //   rooms.clear(); // Clear room list before fetching new data
-
-  //   final selected = floors.firstWhere(
-  //     (floor) => floor.customFloor == value,
-  //     orElse: () => CustomFloor(name: '', customFloor: ''),
-  //   );
-  //   print("${selected.name} this is selected i need id");
-
-  //   // selectedFloorId.value = selected.name.toString();
-
-  //   if (selected.name != null && selected.name!.isNotEmpty) {
-  //     getRoom(selected.name!); // Fetch rooms for the new floor
-  //   } else {
-  //     rooms.clear();
-  //   }
-
-  //   print('User selected new floor: $value');
-  // }
-
-  // // Fetch rooms based on floor ID and building ID
-  // void getRoom(String floorId) async {
-  //   try {
-  //     isLoading.value = true;
-  //     final response = await apiService.getApi(
-  //       'get_lm_room?custom_building=$buildingId&custom_floor=$floorId',
-  //     );
-
-  //     if (response != null && response['message']?['custom_room'] != null) {
-  //       final roomModel = RoomModel.fromJson(response);
-  //       final roomList = roomModel.message?.customRoom ?? [];
-  //       rooms.assignAll(roomList);
-  //     } else {
-  //       rooms.clear();
-  //     }
-
-  //     print(rooms);
-  //   } catch (e) {
-  //     print('Error fetching rooms: $e');
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
-  // // Handle room selection
-  // void setSelectedRoom(String value) {
-  //   selectedRoom.value = value;
-
-  //   print(
-  //     'Selected Floor: ${selectedFloor.value}, Selected Room: ${selectedRoom.value}',
-  //   );
-  //   final roomTake = rooms.firstWhere(
-  //     (floor) => floor.customRoom == value,
-  //     orElse: () => CustomRoom(name: '', customRoom: ''),
-  //   );
-  //   selectedRoomId.value = roomTake.name.toString();
-  //   print(roomTake.name);
-  // }
+  
 
   //Barcode
   Future<void> scanAndFetch(BuildContext context) async {
@@ -259,50 +199,6 @@ class AuditingController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // addScannedAssets() async {
-  //   if (assets.value.isEmpty) return;
-
-  //   final value = assets.value.first;
-  //   final scanned = ScannedModel(
-  //     assetNo: value.assetNo.toString(),
-  //     owner: value.owner.toString(),
-  //     modifiedBy: value.owner.toString(),
-  //     assetStatus: value.assetStatus.toString(),
-  //     date: '17/07/2025',
-  //   );
-
-  //   scannedAssets.value = [scanned];
-
-  //   Get.snackbar('Success', 'Added Successfully');
-  //   // selectedUser.value = '';
-
-  //   print(jsonEncode(scannedAssets.value.first));
-  //   var existing = await appStorage.read("scannedAssets");
-  //   print(jsonEncode(existing));
-
-  //   if (existing == null) {
-  //     print("josn ${jsonEncode([scanned])}");
-  //     appStorage.write("scannedAssets", jsonEncode([scanned.toJson()]));
-  //     final valueResultt = await appStorage.read('scannedAssets');
-  //     print('read ${valueResultt}');
-  //   } else {
-  //     List<dynamic> decoded = jsonDecode(existing);
-  //     decoded.add(scanned.toJson());
-  //     appStorage.write("scannedAssets", jsonEncode(decoded));
-  //     final valueResultt = await appStorage.read('scannedAssets');
-  //     print('read ${valueResultt}');
-  //   }
-  //   getRecentAssets();
-  //   Get.offNamed(
-  //     AppRoutes.auditingPage,
-  //     arguments: {
-  //       'buildingId': buildingId,
-  //       'buildingName': buildingName,
-  //       'dueDate': dueDate,
-  //     },
-  //   );
-  // }
 
   getUser() async {
     try {
@@ -582,12 +478,6 @@ class AuditingController extends GetxController {
     List audit_assetno =
         auditAssets.first.message!.map((e) => e.asset).toList();
     List room_assetno = roomAssets.first.message!.map((e) => e.name).toList();
-    // for (var element in room_assetno) {
-    //   if (!audit_assetno.contains(element)) {
-    //     print(element);
-    //     missingAsset.add(element);
-    //   }
-    // }
 
     List missingAsset =
         room_assetno.where((item) => !audit_assetno.contains((item))).toList();
@@ -632,7 +522,7 @@ class AuditingController extends GetxController {
                     'room': selectedRoomId.value,
                     'audit_type': 'Issued Audit',
                     'audit_status': 'Missing Asset',
-                    'asset_owner': "abhijithjr@am.amrita.edu",
+                    'asset_owner': userMail.value,
                     // 'store': "ICTS Store",
                     'activity_by': userMail.value,
                     'current_status': 'Pending',
@@ -650,11 +540,7 @@ class AuditingController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar('Success', 'Missing Assets Posted');
-        // fetchAuditedAssets(
-        //   buildingId,
-        //   selectedFloorId.value,
-        //   selectedRoomId.value,
-        // );
+
         selectedUser.value = '';
         print("Response: ${response.data}");
       } else {
