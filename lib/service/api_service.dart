@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:asset_audit/service/common_interceptors.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart' as get_pack;
 import 'package:get/utils.dart';
@@ -33,7 +35,7 @@ class ApiService {
     }
   }
 
-  postApi(String value,dynamic data) async {
+  postApi(String value, dynamic data) async {
     try {
       Response response = await dio.post(
         'https://icts.amrita.ac.in/api/method/helpdesk.api.doc.$value',
@@ -41,7 +43,17 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      Get.snackbar('Error', "Api response is not working ${e.toString()}");
+      Get.snackbar(
+        'Error',
+        'API response failed: ',
+        snackPosition: get_pack.SnackPosition.TOP,
+        backgroundColor: Color(0xFFE53935),
+        colorText: Colors.white,
+        margin: EdgeInsets.all(10),
+        borderRadius: 8,
+        icon: Icon(Icons.error, color: Colors.white),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }
