@@ -309,7 +309,7 @@ class AssetViewPage extends StatelessWidget {
 
                               // check(
                               //   controller.selectedRoomId == assetList.customRoom
-                              //       ? "Room Mathched"
+                              //       ? "Room Matched"
                               //       : "Not Matched",
                               //   controller.selectedRoomId == assetList.customRoom
                               //       ? LucideIcons.circleCheck
