@@ -294,95 +294,135 @@ class AssetViewPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 15.h),
-                      Text(
-                        'Audit Status',
-                        style: TextStyle(
-                          fontSize: 16.87.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 5.h),
+                      controller.isDuplicateAsset.value == false
+                          ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Audit Status',
+                                style: TextStyle(
+                                  fontSize: 16.87.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 5.h),
 
-                      // check(
-                      //   controller.selectedRoomId == assetList.customRoom
-                      //       ? "Room Mathched"
-                      //       : "Not Matched",
-                      //   controller.selectedRoomId == assetList.customRoom
-                      //       ? LucideIcons.circleCheck
-                      //       : LucideIcons.circle,
-                      // ),
-                      Text(
-                        controller.selectedRoomId == assetList.customRoom
-                            ? 'Location Verified: Asset is placed in the correct location.'
-                            : 'Location Mismatch: Asset found in a different location than expected.',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              controller.selectedRoomId == assetList.customRoom
-                                  ? AppTheme.blackColor
-                                  : AppTheme.dangerColor,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      // Confirm Button
-                      InkWell(
-                        onTap: () {
-                          if (controller.selectedUser.value != "") {
-                            controller.setCurrentAssetStatus();
-                            // controller.addScannedAssets();
-                            controller.updateAssetStatus(
-                              auditNumber: controller.auditNumber,
-                              assetNumber: assetList.assetNo.toString(),
-                              building: controller.buildingId,
-                              floor: controller.selectedFloorId.value,
-                              auditType: 'Issued Audit',
-                              assetStatus: controller.currentAssetStatus.value,
-                              assetOwner: controller.selectedUser.value,
-                              storeName:
-                                  assetList.store == null
-                                      ? ''
-                                      : assetList.store.toString(),
-                              activityBy: controller.userMail.value,
-                              room: controller.selectedRoomId.value,
-                              assetStatusOfCurrent: '',
-                            );
-                          } else {
-                            Get.snackbar(
-                              'Select User',
-                              'The owen is not selected',
-                            );
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(32),
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8.h,
-                            horizontal: 30.w,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(32),
-                            gradient: AppTheme.primaryGradient,
-                            border: Border.all(color: AppTheme.primaryColor),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.shade400,
-                                blurRadius: 6,
-                                offset: Offset(0, 3),
+                              // check(
+                              //   controller.selectedRoomId == assetList.customRoom
+                              //       ? "Room Mathched"
+                              //       : "Not Matched",
+                              //   controller.selectedRoomId == assetList.customRoom
+                              //       ? LucideIcons.circleCheck
+                              //       : LucideIcons.circle,
+                              // ),
+                              Text(
+                                controller.selectedRoomId ==
+                                        assetList.customRoom
+                                    ? 'Location Verified: Asset is placed in the correct location.'
+                                    : 'Location Mismatch: Asset found in a different location than expected.',
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      controller.selectedRoomId ==
+                                              assetList.customRoom
+                                          ? AppTheme.blackColor
+                                          : AppTheme.dangerColor,
+                                ),
                               ),
                             ],
-                          ),
-                          child: Text(
-                            'Confirm',
-                            style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                          )
+                          : SizedBox.shrink(),
+                      SizedBox(height: 10.h),
+                      // Confirm Button
+                      Obx(() {
+                        return controller.isDuplicateAsset.value == false
+                            ? InkWell(
+                              onTap: () {
+                                if (controller.selectedUser.value != "") {
+                                  controller.setCurrentAssetStatus();
+                                  // controller.addScannedAssets();
+                                  controller.updateAssetStatus(
+                                    auditNumber: controller.auditNumber,
+                                    assetNumber: assetList.assetNo.toString(),
+                                    building: controller.buildingId,
+                                    floor: controller.selectedFloorId.value,
+                                    auditType: 'Issued Audit',
+                                    assetStatus:
+                                        controller.currentAssetStatus.value,
+                                    assetOwner: controller.selectedUser.value,
+                                    storeName:
+                                        assetList.store == null
+                                            ? ''
+                                            : assetList.store.toString(),
+                                    activityBy: controller.userMail.value,
+                                    room: controller.selectedRoomId.value,
+                                    assetStatusOfCurrent: '',
+                                  );
+                                } else {
+                                  Get.snackbar(
+                                    'Select User',
+                                    'The owen is not selected',
+                                  );
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(32),
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8.h,
+                                  horizontal: 30.w,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(32),
+                                  gradient: AppTheme.primaryGradient,
+                                  border: Border.all(
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade400,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  'Confirm',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                            : Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(12),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.dangerColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppTheme.dangerColor,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                '⚠️ This asset has already been scanned.',
+                                style: TextStyle(
+                                  color: AppTheme.dangerColor,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                      }),
                     ],
                   ),
                 ),

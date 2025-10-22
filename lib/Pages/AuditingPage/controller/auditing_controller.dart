@@ -47,6 +47,7 @@ class AuditingController extends GetxController {
   RxString statusAsset = ''.obs;
   RxString userName = ''.obs;
   RxString userMail = ''.obs;
+  RxBool isDuplicateAsset = false.obs;
 
   RxString selectedUser = ''.obs;
 
@@ -163,7 +164,15 @@ class AuditingController extends GetxController {
 
   //Get asset
   Future<bool> getAsset(String code) async {
+    if (auditAssets.isNotEmpty) {
+      isDuplicateAsset.value =
+          auditAssets.first.message?.any((asset) => asset.asset == code) ??
+          false;
+
+    }
     try {
+      isLoading.value = true;
+      print("this is value isDuplicateAsset.value ${isDuplicateAsset.value}");
       isLoading.value = true;
       final response = await apiService.getApi('get_one?id=$code');
 
@@ -392,14 +401,18 @@ class AuditingController extends GetxController {
 
     final floors = pendingFloors.first.message?.pendingRoomsByFloor;
     final matchingFloors = floors?.where((floor) => floor.floorName == value);
-    final floorData = (matchingFloors != null && matchingFloors.isNotEmpty) ? matchingFloors.first : null;
+    final floorData =
+        (matchingFloors != null && matchingFloors.isNotEmpty)
+            ? matchingFloors.first
+            : null;
 
     if (floorData != null) {
       final roomsList = floorData.rooms;
       if (roomsList != null && roomsList.isNotEmpty) {
-        pendingRooms.value = roomsList
-            .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
-            .toList();
+        pendingRooms.value =
+            roomsList
+                .map((e) => Rooms(roomId: e.roomId, roomName: e.roomName))
+                .toList();
       } else {
         pendingRooms.value = [];
       }
