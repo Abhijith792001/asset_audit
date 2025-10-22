@@ -353,7 +353,7 @@ class AuditingPage extends GetView<AuditingController> {
                                                 }
 
                                                 // The duplicate check is now handled inside getAsset
-                                                final success = await controller.getAsset(assetNumber);
+                                                final success = await controller.getAsset(assetNumber.toUpperCase());
                                                 if (success) {
                                                   Get.back(); // Close the dialog
                                                   _assetNumber.clear(); // Clear text field for next time
