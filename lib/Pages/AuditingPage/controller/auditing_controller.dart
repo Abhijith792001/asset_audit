@@ -19,6 +19,8 @@ class AuditingController extends GetxController {
   final ApiService apiService = ApiService();
   StorageManager appStorage = StorageManager();
 
+  // RxList<CustomFloor> floors = <CustomFloor>[].obs;
+  // RxList<CustomRoom> rooms = <CustomRoom>[].obs;
   RxList<AssetModel> assets = <AssetModel>[].obs;
   RxList<ScannedModel> scannedAssets = <ScannedModel>[].obs;
   RxList<ScannedModel> RecentscannedAssets = <ScannedModel>[].obs;
@@ -48,6 +50,7 @@ class AuditingController extends GetxController {
   RxBool isDuplicateAsset = false.obs;
 
   RxString selectedUser = ''.obs;
+  RxString recentlySelectedUser = ''.obs;
 
   late final String buildingId;
   late final String buildingName;
@@ -68,46 +71,24 @@ class AuditingController extends GetxController {
     getRecentAssets();
     getUser();
     getUserMail();
+    getRecentlySelectedUser();
     setCurrentAssetStatus();
-    
-    // Load previously selected user
-    await loadSelectedUser();
-    
+    // updateAssets();
     if (buildingId.isNotEmpty) {
     } else {
       print('No building ID provided');
     }
     print(buildingId);
     fetchRoom(buildingId);
-  }
 
-  // NEW: Load the previously selected user from storage
-  Future<void> loadSelectedUser() async {
-    try {
-      final savedUser = await appStorage.read('selectedUser');
-      if (savedUser != null && savedUser.isNotEmpty) {
-        selectedUser.value = savedUser;
-        print('Loaded saved user: $savedUser');
-      }
-    } catch (e) {
-      print('Error loading selected user: ${e.toString()}');
-    }
-  }
-
-  // NEW: Save selected user to storage
-  Future<void> saveSelectedUser(String user) async {
-    try {
-      await appStorage.write('selectedUser', user);
-      print('Saved user: $user');
-    } catch (e) {
-      print('Error saving selected user: ${e.toString()}');
-    }
+    // getAllAssetsByRoom('', '', '');
   }
 
   void getRecentAssets() async {
     final recentScannedAssets = await appStorage.read("scannedAssets");
 
     if (recentScannedAssets != null) {
+      // Decode string to List
       List<dynamic> decodedList = jsonDecode(recentScannedAssets);
       final finalData =
           decodedList
@@ -115,7 +96,7 @@ class AuditingController extends GetxController {
               .toList();
       RecentscannedAssets.value = finalData;
     } else {
-      RecentscannedAssets.clear();
+      RecentscannedAssets.clear(); // Optional: clear if nothing in storage
     }
   }
 
@@ -128,7 +109,7 @@ class AuditingController extends GetxController {
         actions: [
           TextButton(
             onPressed: () {
-              Get.back(result: false);
+              Get.back(result: false); // Close the dialog
             },
             child: Text('Cancel'),
           ),
@@ -144,6 +125,7 @@ class AuditingController extends GetxController {
     return result ?? false;
   }
 
+  //Barcode
   Future<void> scanAndFetch(BuildContext context) async {
     if (selectedRoom.value.isEmpty && selectedFloor.value.isEmpty) {
       Get.snackbar('Not Selected', 'Please select Room & Floor');
@@ -172,6 +154,7 @@ class AuditingController extends GetxController {
 
     barcode.value = result;
 
+    // Fetch the asset details and go to AssetViewPage
     final success = await getAsset(result);
     if (success) {
       Get.toNamed(
@@ -181,11 +164,13 @@ class AuditingController extends GetxController {
     }
   }
 
+  //Get asset
   Future<bool> getAsset(String code) async {
     if (auditAssets.isNotEmpty) {
       isDuplicateAsset.value =
           auditAssets.first.message?.any((asset) => asset.asset == code) ??
           false;
+
     }
     try {
       isLoading.value = true;
@@ -208,11 +193,8 @@ class AuditingController extends GetxController {
 
           if (matchedUser != null) {
             selectedUser.value = matchedUser.name ?? '';
-            // Save the matched user
-            await saveSelectedUser(selectedUser.value);
           } else {
-            // Load previously saved user if no match
-            await loadSelectedUser();
+            selectedUser.value = '';
             print("No matching user found for asset owner: $assetOwnerEmail");
           }
 
@@ -258,10 +240,12 @@ class AuditingController extends GetxController {
     }
   }
 
-  // UPDATED: Save selected user when changed
-  setSelectedUsers(String value) {
+  
+
+  setSelectedUsers(String value) async {
     selectedUser.value = value;
-    saveSelectedUser(value);
+    recentlySelectedUser.value = value;
+    await appStorage.write('recentlySelectedUser', value);
   }
 
   Future updateAssetStatus({
@@ -305,11 +289,7 @@ class AuditingController extends GetxController {
           selectedFloorId.value,
           selectedRoomId.value,
         );
-        
-        // Clear selected user after successful submission
         selectedUser.value = '';
-        await appStorage.delete('selectedUser');
-        
         print(response);
         print(currentAssetStatus.value);
         Get.offNamed(
@@ -381,6 +361,7 @@ class AuditingController extends GetxController {
               Get.back();
               final deletedData = await appStorage.read('scannedAssets');
               print("scannedAssets after delete: $deletedData");
+              // Get.back();
             },
             child: Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
           ),
@@ -406,6 +387,24 @@ class AuditingController extends GetxController {
     print(currentUserMail.value);
   }
 
+  void getRecentlySelectedUser() async {
+    final savedUser = await appStorage.read('recentlySelectedUser');
+    if (savedUser != null) {
+      recentlySelectedUser.value = savedUser;
+    }
+  }
+
+  void clearRecentlySelectedUser() async {
+    await appStorage.delete('recentlySelectedUser');
+    recentlySelectedUser.value = '';
+  }
+
+  void setRecentUserAsSelected() {
+    if (recentlySelectedUser.value.isNotEmpty) {
+      selectedUser.value = recentlySelectedUser.value;
+    }
+  }
+
   fetchRoom(String buildingId) async {
     final data = {"building": buildingId};
     appDio.Response response = await apiService.postApi(
@@ -415,6 +414,8 @@ class AuditingController extends GetxController {
     log('${response.data}');
     pendingFloors.value =
         await [PendingRoomsByFloorModel.fromJson(response.data)].toList();
+
+    // log('${jsonEncode(pendingFloors.value)}');
   }
 
   setSelectedPendingFloor(String value) async {
@@ -489,6 +490,8 @@ class AuditingController extends GetxController {
           await [AuditedAssetsModel.fromJson(response.data)].toList();
 
       log('AuditedAssetsModel${jsonEncode(auditAssets.value)}');
+      // if (response.statusCode != null) {
+      // }
     } catch (e) {
       Get.snackbar('Error', 'Check your api$e');
     } finally {
@@ -534,6 +537,8 @@ class AuditingController extends GetxController {
 
     postMissingAsset(assetNumbers: missingAsset);
 
+    //     }
+
     print('----------------audit-----------> $audit_assetno');
     print('----------room------------>$room_assetno');
     print('----------missing Asset------------>$missingAsset');
@@ -571,6 +576,7 @@ class AuditingController extends GetxController {
                     'audit_type': 'Issued Audit',
                     'audit_status': 'Missing Asset',
                     'asset_owner': userMail.value,
+                    // 'store': "ICTS Store",
                     'activity_by': userMail.value,
                     'current_status': 'Pending',
                   },

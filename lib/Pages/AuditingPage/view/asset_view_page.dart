@@ -495,6 +495,9 @@ class AssetViewPage extends StatelessWidget {
                             controller.users.map((f) => f.email ?? '').toList(),
                         onChanged:
                             (value) => controller.setSelectedUsers(value),
+                        recentlySelectedUser: controller.recentlySelectedUser.value,
+                        onClearRecentlySelected: () => controller.clearRecentlySelectedUser(),
+                        onRecentUserTap: () => controller.setRecentUserAsSelected(),
                       );
                     }),
                     SizedBox(height: 24.h),
