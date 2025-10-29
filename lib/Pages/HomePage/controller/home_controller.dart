@@ -19,7 +19,7 @@ class HomeController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     userMail.value = await appStorage.read('mail') ?? '';
-    print('Home controller ${userMail.value}');
+    // print('Home controller ${userMail.value}');
     fetchAudit();
   }
 
@@ -37,15 +37,15 @@ class HomeController extends GetxController {
                 .toList();
 
         // Get logged-in user mail
-        print('Logged in user: ${userMail.value}');
+        // print('Logged in user: ${userMail.value}');
         auditList.value =
             audits.where((element) {
               return element.assignedTo != null &&
                   element.assignedTo!.contains(userMail.value);
             }).toList();
-        print('Filtered audit list: ${jsonEncode(auditList.value)}');
+        // print('Filtered audit list: ${jsonEncode(auditList.value)}');
       } else {
-        print('Failed to load audits or no data found.');
+        // print('Failed to load audits or no data found.');
       }
     } catch (e) {
       Get.snackbar('Error', 'API error: ${e.toString()}');

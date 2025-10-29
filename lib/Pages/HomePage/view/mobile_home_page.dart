@@ -5,6 +5,7 @@ import 'package:asset_audit/routes/app_routes.dart';
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:asset_audit/widgets/building_list_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -13,51 +14,57 @@ import 'package:skeletonizer/skeletonizer.dart';
 class MobileHomePage extends GetView<HomeController> {
   final AuthController _authControler = Get.find<AuthController>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  @override
+  
+
+ @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
+    );
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(
-                _authControler.userName.value,
-              ),
-              accountEmail: Text(_authControler.userMail.value),
-              currentAccountPicture: CircleAvatar(
-                child: Icon(LucideIcons.user, size: 35.sp),
-              ),
-              decoration: BoxDecoration(color: AppTheme.primaryColor),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () => Navigator.pop(context),
-            ),
-            // Divider(),
-            Spacer(),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () {
-                _authControler.logout(); 
-              },
-            ),
-          ],
+     drawer: Drawer(
+  child: ListView(
+    padding: EdgeInsets.zero,
+    children: [
+      UserAccountsDrawerHeader(
+        accountName: Text(_authControler.userName.value),
+        accountEmail: Text(_authControler.userMail.value),
+        currentAccountPicture: CircleAvatar(
+          child: Icon(LucideIcons.user, size: 35),
         ),
+        decoration: BoxDecoration(color: AppTheme.primaryColor),
       ),
+      ListTile(
+        leading: Icon(Icons.home),
+        title: Text('Home'),
+        onTap: () => Navigator.pop(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.person),
+        title: Text('Profile'),
+        onTap: () => Navigator.pop(context),
+      ),
+      ListTile(
+        leading: Icon(Icons.settings),
+        title: Text('Settings'),
+        onTap: () => Navigator.pop(context),
+      ),
+
+      // Instead of Spacer
+      SizedBox(height: 250), // Adjust height as needed
+
+      ListTile(
+        leading: Icon(Icons.logout),
+        title: Text('Logout'),
+        onTap: () {
+          _authControler.logout();
+        },
+      ),
+    ],
+  ),
+),
+
 
       body: Column(
         children: [
@@ -84,7 +91,7 @@ class MobileHomePage extends GetView<HomeController> {
                                       _scaffoldKey.currentState!.openDrawer();
                                     },
                                     child: Icon(
-                                      LucideIcons.alignLeft,
+                                      LucideIcons.textAlignStart,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -302,14 +309,14 @@ class MobileHomePage extends GetView<HomeController> {
                 child: _buildBottomNavItem(LucideIcons.box, 'Assets'),
               ),
             ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => {}, 
-                borderRadius: BorderRadius.circular(10),
-                child: _buildBottomNavItem(LucideIcons.user, 'Profile'),
-              ),
-            ),
+            // Material(
+            //   color: Colors.transparent,
+            //   child: InkWell(
+            //     onTap: () => {}, 
+            //     borderRadius: BorderRadius.circular(10),
+            //     child: _buildBottomNavItem(LucideIcons.user, 'Profile'),
+            //   ),
+            // ),
           ],
         ),
       ),

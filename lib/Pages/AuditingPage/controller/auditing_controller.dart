@@ -62,7 +62,7 @@ class AuditingController extends GetxController {
     super.onInit();
     userName.value = await appStorage.read('name');
     userMail.value = await appStorage.read('mail');
-    print("${userMail.value}----->");
+    // print("${userMail.value}----->");
     buildingId = Get.arguments?['buildingId'] ?? '';
     buildingName = Get.arguments?['buildingName'] ?? '';
     dueDate = Get.arguments?['dueDate'] ?? '';
@@ -76,9 +76,9 @@ class AuditingController extends GetxController {
     // updateAssets();
     if (buildingId.isNotEmpty) {
     } else {
-      print('No building ID provided');
+      // print('No building ID provided');
     }
-    print(buildingId);
+    // print(buildingId);
     fetchRoom(buildingId);
 
     // getAllAssetsByRoom('', '', '');
@@ -174,7 +174,7 @@ class AuditingController extends GetxController {
     }
     try {
       isLoading.value = true;
-      print("this is value isDuplicateAsset.value ${isDuplicateAsset.value}");
+      // print("this is value isDuplicateAsset.value ${isDuplicateAsset.value}");
       isLoading.value = true;
       final response = await apiService.getApi('get_one?id=$code');
 
@@ -195,11 +195,11 @@ class AuditingController extends GetxController {
             selectedUser.value = matchedUser.name ?? '';
           } else {
             selectedUser.value = '';
-            print("No matching user found for asset owner: $assetOwnerEmail");
+            // print("No matching user found for asset owner: $assetOwnerEmail");
           }
 
-          print(selectedUser.value);
-          print(assets.value.first);
+          // print(selectedUser.value);
+          // print(assets.value.first);
           return true;
         } else {
           Get.snackbar('Not Found', 'No asset found...');
@@ -229,7 +229,7 @@ class AuditingController extends GetxController {
         final UsersModel usersModel = UsersModel.fromJson(response);
         users.clear();
         users.addAll(usersModel.message ?? []);
-        print(users.map((e) => e.toJson()).toList());
+        // print(users.map((e) => e.toJson()).toList());
       } else {
         Get.snackbar('Error', 'Failed to fetch users: Invalid response');
       }
@@ -290,8 +290,8 @@ class AuditingController extends GetxController {
           selectedRoomId.value,
         );
         selectedUser.value = '';
-        print(response);
-        print(currentAssetStatus.value);
+        // print(response);
+        // print(currentAssetStatus.value);
         Get.offNamed(
           AppRoutes.auditingPage,
           arguments: {
@@ -305,7 +305,7 @@ class AuditingController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Unable to submit audit. Please try again.');
-      print('cached error ${e.toString()}');
+      // print('cached error ${e.toString()}');
     }
   }
 
@@ -335,7 +335,7 @@ class AuditingController extends GetxController {
       statusAsset.value = "Pending";
     }
 
-    print('Asset Status: ${currentAssetStatus.value}');
+    // print('Asset Status: ${currentAssetStatus.value}');
   }
 
   clearAudit() async {
@@ -360,7 +360,7 @@ class AuditingController extends GetxController {
               RecentscannedAssets.clear();
               Get.back();
               final deletedData = await appStorage.read('scannedAssets');
-              print("scannedAssets after delete: $deletedData");
+              // print("scannedAssets after delete: $deletedData");
               // Get.back();
             },
             child: Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -384,7 +384,7 @@ class AuditingController extends GetxController {
   getUserMail() async {
     final value = await appStorage.read('userMail');
     currentUserMail.value = value ?? '';
-    print(currentUserMail.value);
+    // print(currentUserMail.value);
   }
 
   void getRecentlySelectedUser() async {
@@ -479,7 +479,7 @@ class AuditingController extends GetxController {
   fetchAuditedAssets(String buildingId, String floorId, String roomId) async {
     isLoading.value = true;
     final payload = {"building": buildingId, "floor": floorId, "room": roomId};
-    print('AuditedAssetsModel ${payload}');
+    // print('AuditedAssetsModel ${payload}');
     try {
       appDio.Response response = await apiService.postApi(
         'get_api_audit_analysis_filter',
@@ -539,9 +539,9 @@ class AuditingController extends GetxController {
 
     //     }
 
-    print('----------------audit-----------> $audit_assetno');
-    print('----------room------------>$room_assetno');
-    print('----------missing Asset------------>$missingAsset');
+    // print('----------------audit-----------> $audit_assetno');
+    // print('----------room------------>$room_assetno');
+    // print('----------missing Asset------------>$missingAsset');
 
     log(
       'missing assets--------------------------------------------> ${missingAsset}',
@@ -584,7 +584,7 @@ class AuditingController extends GetxController {
                 .toList(),
       };
 
-      print("Payload ------------------------> $payload");
+      // print("Payload ------------------------> $payload");
 
       final appDio.Response response = await apiService.postApi(
         'create_audit_analysis_multiple',
@@ -595,13 +595,13 @@ class AuditingController extends GetxController {
         Get.snackbar('Success', 'Missing Assets Posted');
 
         selectedUser.value = '';
-        print("Response: ${response.data}");
+        // print("Response: ${response.data}");
       } else {
         Get.snackbar('Error', 'Failed to post. Status: ${response.statusCode}');
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());
-      print('Caught error: ${e.toString()}');
+      // print('Caught error: ${e.toString()}');
     } finally {
       roomStatusUpdate();
       clearDropDown();
@@ -614,7 +614,7 @@ class AuditingController extends GetxController {
       "building": buildingId,
       "rooms_to_update": [selectedRoomId.value],
     };
-    print('rooms status payload $payload');
+    // print('rooms status payload $payload');
     try {
       isLoading.value = true;
       appDio.Response response = await apiService.postApi(
@@ -623,9 +623,9 @@ class AuditingController extends GetxController {
       );
 
       if (response != null) {
-        print('Room status updated $response');
+        // print('Room status updated $response');
       } else {
-        print('cheack you api');
+        // print('cheack you api');
       }
     } catch (e) {
       Get.snackbar('error', '${e.toString()}');

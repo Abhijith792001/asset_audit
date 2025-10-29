@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.icts.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "29.0.14033849"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -32,8 +32,14 @@ android {
         applicationId = "com.icts.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 5
+        versionName = "1.0.4"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags.add("-Wl,-z,max-page-size=16384")
+            }
+        }
     }
 
     signingConfigs {

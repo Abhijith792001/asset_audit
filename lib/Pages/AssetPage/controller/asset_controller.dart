@@ -30,12 +30,12 @@ class AssetController extends GetxController {
         final List<dynamic> list = response['message']['name'] ?? [];
         allAssets.value = list.map((e) => AssetModel.fromJson(e)).toList();
         updateDisplayedAssets();
-        print(allAssets.value.length);
+        // print(allAssets.value.length);
       } else {
         print("response is null");
       }
     } catch (e) {
-      print("Error: $e");
+      // print("Error: $e");
     } finally {
       isLoading.value = false;
     }

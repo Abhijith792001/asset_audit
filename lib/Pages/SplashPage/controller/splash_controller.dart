@@ -22,7 +22,7 @@ class SplashController extends GetxController {
       FlutterNativeSplash.remove();
       await Future.delayed(const Duration(seconds: 2));
 
-      print(userData);
+      // print(userData);
 
       if (userData != null) {
         Get.offAllNamed(AppRoutes.loginPage);
@@ -30,7 +30,7 @@ class SplashController extends GetxController {
         Get.offAllNamed(AppRoutes.registrationPage);
       }
     } catch (e) {
-      print('Error during initialization: $e');
+      // print('Error during initialization: $e');
       FlutterNativeSplash.remove();
       Get.offAllNamed(AppRoutes.registrationPage); // fallback
     }

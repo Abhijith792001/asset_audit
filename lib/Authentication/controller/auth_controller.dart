@@ -18,7 +18,7 @@ class AuthController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     getUserMailName();
-    print('${userMail.value} and ${userName.value}');
+    // print('${userMail.value} and ${userName.value}');
   }
 
   final StorageManager appStorage = StorageManager();
@@ -55,7 +55,7 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to load user: $e');
-      print('Load Error: $e');
+      // print('Load Error: $e');
     }
   }
 
@@ -70,15 +70,15 @@ class AuthController extends GetxController {
         payload,
       );
 
-      print('------------>${response}');
-      print('${payload}');
+      // print('------------>${response}');
+      // print('${payload}');
       if (response.data['message']['status'] == 'success') {
         Get.snackbar('Login Successful', 'Welcome ${userName.value}');
         Get.offNamed(AppRoutes.homePage);
       } else if (response.data['message']['status'] == 'error') {
         Get.snackbar('Invalid MPIN', 'Please try again');
       } else {
-        print('Something wrong');
+        // print('Something wrong');
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -97,7 +97,7 @@ class AuthController extends GetxController {
           'agent_login_with_mpin_and_user',
           payload,
         );
-        print(response);
+        // print(response);
 
         if (response.data['message']['message'] == "No user found.") {
           return errorMessage.value = 'User not found';
@@ -119,7 +119,7 @@ class AuthController extends GetxController {
           );
           userName.value = await appStorage.read('name');
           userMail.value = await appStorage.read('mail');
-          print('UserName ${userName.value} UserMail ${userMail.value}');
+          // print('UserName ${userName.value} UserMail ${userMail.value}');
           Get.offAllNamed(AppRoutes.loginPage);
           return errorMessage.value = '';
         }
@@ -128,7 +128,7 @@ class AuthController extends GetxController {
       Get.snackbar('Error catch', e.toString());
     } finally {
       isLoading.value = false;
-      print(userName.value);
+      // print(userName.value);
     }
   }
 
