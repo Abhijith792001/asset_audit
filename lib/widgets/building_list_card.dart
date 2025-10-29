@@ -1,6 +1,5 @@
 import 'package:asset_audit/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class BuildingListCard extends StatelessWidget {
@@ -18,7 +17,7 @@ class BuildingListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -29,18 +28,18 @@ class BuildingListCard extends StatelessWidget {
               offset: const Offset(0, 4),
             ),
           ],
-          borderRadius: BorderRadius.all(Radius.circular(16.sp)),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
           border: Border.all(color: Colors.grey.shade200),
         ),
         child: Padding(
-          padding: EdgeInsets.all(16.sp),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   MinimalIcon(icon: LucideIcons.school),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,14 +48,14 @@ class BuildingListCard extends StatelessWidget {
                           buildingName,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize: 16.sp,
+                            fontSize: 16,
                           ),
                         ),
-                        SizedBox(height: 4.h),
+                        SizedBox(height: 4),
                         Text(
                           auditId,
                           style: TextStyle(
-                            fontSize: 13.sp,
+                            fontSize: 13,
                             color: Colors.grey.shade500,
                           ),
                         ),
@@ -66,7 +65,7 @@ class BuildingListCard extends StatelessWidget {
                   Icon(LucideIcons.chevronRight, color: Colors.grey.shade400),
                 ],
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -75,7 +74,7 @@ class BuildingListCard extends StatelessWidget {
                     style: TextStyle(
                       color: AppTheme.primaryColor,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
+                      fontSize: 14,
                     ),
                   ),
                   Row(
@@ -85,7 +84,7 @@ class BuildingListCard extends StatelessWidget {
                       Text(
                         auditType,
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 13,
                           color: Colors.grey.shade600,
                           fontWeight: FontWeight.w500,
                         ),
@@ -109,7 +108,7 @@ class MinimalIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10.sp),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: AppTheme.primaryColor.withOpacity(0.05),
         shape: BoxShape.circle,

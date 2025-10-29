@@ -1,6 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomDropdownSearch extends StatelessWidget {
   final String hint;
@@ -44,7 +43,7 @@ class CustomDropdownSearch extends StatelessWidget {
         hint: Text(
           hint,
           style: TextStyle(
-            fontSize: 12.sp,
+            fontSize: 12,
             color: Colors.grey[600],
             fontWeight: FontWeight.w500,
           ),
@@ -58,7 +57,7 @@ class CustomDropdownSearch extends StatelessWidget {
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 12.sp,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
@@ -73,11 +72,11 @@ class CustomDropdownSearch extends StatelessWidget {
             value: value,
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 1.w),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 1),
               child: Text(
                 value,
                 style: TextStyle(
-                  fontSize: 12.sp,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
@@ -93,11 +92,11 @@ class CustomDropdownSearch extends StatelessWidget {
           }
         },
         buttonStyleData: ButtonStyleData(
-          height: 40.h,
-          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.h),
+          height: 40,
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade300, width: 1),
             boxShadow: [
               BoxShadow(
@@ -112,16 +111,16 @@ class CustomDropdownSearch extends StatelessWidget {
           icon: Icon(
             Icons.keyboard_arrow_down_rounded,
             color: Colors.grey[600],
-            size: 20.sp,
+            size: 20,
           ),
-          iconSize: 20.sp,
+          iconSize: 20,
         ),
         dropdownStyleData: DropdownStyleData(
-          maxHeight: 300.h,
+          maxHeight: 300,
           direction: DropdownDirection.textDirection,
-          padding: EdgeInsets.symmetric(vertical: 6.h),
+          padding: EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(12),
             color: Colors.white,
             boxShadow: [
               BoxShadow(
@@ -131,24 +130,24 @@ class CustomDropdownSearch extends StatelessWidget {
               ),
             ],
           ),
-          scrollbarTheme: ScrollbarThemeData(radius: Radius.circular(40.r)),
+          scrollbarTheme: ScrollbarThemeData(radius: Radius.circular(40)),
         ),
         dropdownSearchData: DropdownSearchData(
           searchController: searchController,
-          searchInnerWidgetHeight: 60.h,
+          searchInnerWidgetHeight: 60,
           searchInnerWidget: Padding(
-            padding: EdgeInsets.all(8.w),
+            padding: EdgeInsets.all(8),
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Search...',
-                hintStyle: TextStyle(fontSize: 12.sp),
+                hintStyle: TextStyle(fontSize: 12),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: 10.w,
-                  vertical: 8.h,
+                  horizontal: 10,
+                  vertical: 8,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
@@ -170,11 +169,11 @@ class CustomDropdownSearch extends StatelessWidget {
 
   Widget _buildRecentlySelected(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      margin: EdgeInsets.only(top: 8),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10.r),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: Theme.of(context).primaryColor.withOpacity(0.2),
           width: 1,
@@ -184,10 +183,10 @@ class CustomDropdownSearch extends StatelessWidget {
         children: [
           Icon(
             Icons.history_rounded,
-            size: 16.sp,
+            size: 16,
             color: Theme.of(context).primaryColor.withOpacity(0.7),
           ),
-          SizedBox(width: 6.w),
+          SizedBox(width: 6),
           Expanded(
             child: GestureDetector(
               onTap: onRecentUserTap,
@@ -196,7 +195,7 @@ class CustomDropdownSearch extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 text: TextSpan(
                   style: TextStyle(
-                    fontSize: 11.sp,
+                    fontSize: 11,
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w500,
                   ),
@@ -215,18 +214,18 @@ class CustomDropdownSearch extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 4.w),
+          SizedBox(width: 4),
           GestureDetector(
             onTap: onClearRecentlySelected,
             child: Container(
-              padding: EdgeInsets.all(4.sp),
+              padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.close,
-                size: 12.sp,
+                size: 12,
                 color: Colors.grey[700],
               ),
             ),

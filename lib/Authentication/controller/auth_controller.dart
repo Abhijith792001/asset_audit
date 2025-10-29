@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io'; // for Platform check
 import 'package:asset_audit/service/api_service.dart';
@@ -9,6 +10,9 @@ import 'package:asset_audit/utils/storage_manager.dart';
 import 'package:asset_audit/Authentication/model/user_model.dart';
 
 class AuthController extends GetxController {
+  final FocusNode pinFocusNode = FocusNode();
+  final TextEditingController pinController = TextEditingController();
+
   @override
   void onInit() async {
     // TODO: implement onInit
